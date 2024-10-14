@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>AP2</title>
+                <link rel="stylesheet" href="/style css/ap.css">
+                <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+                <link rel="icon" href="data:,">
+
+
+
+
+
+</head>
+
+<body>
+                <!-- Menu Mobile -->
+                <div class="mobile-menu">
+                                <div class="mobile-header">
+                                                <div class="brand">
+                                                                <img src="/image/M2L.jpg" alt="Logo M2L"
+                                                                                class="mobile-logo">
+                                                                <h1 class="mobile-title">M2L</h1>
+                                                </div>
+                                </div>
+                                <div class="menu-bar">
+                                                <span class="menu-text">Menu</span>
+                                                <button id="toggler">
+                                                                <span class="material-icons">menu</span>
+                                                </button>
+                                </div>
+                </div>
+
+                <!-- Menu Desktop/Mobile -->
+                <div class="menu">
+                                <div class="menu-container">
+                                                <a href="/" class="logo">
+                                                                <img src="/image/M2L.jpg" alt="Logo M2L">
+
+                                                </a>
+                                                <ul class="menu-listing">
+                                                                <li><a href="/apropos">A propos</a></li>
+                                                                <li><a href="/ligues">Ligues</a></li>
+                                                                <li><a href="/articles">Articles</a></li>
+                                                                <li><a href="/Pages/contact.html">Contact</a></li>
+                                                </ul>
+
+                                                <div class="auth-buttons">
+                                                                <a href="/Pages/connexion.php" class="login">Se
+                                                                                connecter</a>
+
+
+
+                                                                <a href="/Pages/inscription.php"
+                                                                                class="signup">S'inscrire</a>
+                                                </div>
+                                </div>
+
+                </div>
+
+                <script>
+                                document.getElementById('toggler').addEventListener('click', function () {
+                                                document.querySelector('.menu').classList.toggle('active');
+                                });
+                </script>
+</body>
+
+</html>

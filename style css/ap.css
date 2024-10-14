@@ -1,0 +1,265 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 400vh;
+}
+
+/* Style Mobile (jusqu'à 767px) */
+@media (max-width: 767px) {
+    .mobile-menu {
+        width: 100%;
+        position: sticky;
+        top: 0;
+        background: white;
+        z-index: 999;
+        box-shadow: 1px 1px 25px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Nouvelle section pour l'en-tête mobile */
+    .mobile-header {
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(220, 50, 15, 0.1);
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    /* .mobile-logo {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+    } */
+
+    .mobile-title {
+        font-size: 2.5rem;
+        color: #DC320F;
+        font-weight: bold;
+    }
+
+    /* Style de la barre de menu */
+    .menu-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 20px;
+        border: 1px solid rgba(220, 50, 15, 0.2);
+        margin: 10px 20px;
+        border-radius: 8px;
+    }
+
+    .menu-text {
+        font-size: 1.2rem;
+        color: #DC320F;
+    }
+
+    #toggler {
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        color: #DC320F;
+    }
+
+    #toggler .material-icons {
+        font-size: 24px;
+    }
+
+    /* Menu déroulant */
+    .menu {
+        display: none;
+        width: 100%;
+        background: white;
+    }
+
+    .menu.active {
+        display: block;
+    }
+
+    .menu-container {
+        padding: 0;
+    }
+
+    .menu-listing {
+        list-style: none;
+        width: 100%;
+    }
+
+    .menu-listing li {
+        width: 100%;
+        border-top: 1px solid rgba(220, 50, 15, 0.1);
+    }
+
+    .menu-listing li:last-child {
+        border-bottom: 1px solid rgba(220, 50, 15, 0.1);
+    }
+
+    .menu-listing a {
+        display: block;
+        color: black;
+        text-decoration: none;
+        padding: 20px;
+        font-size: 1.5rem;
+        text-align: center;
+        width: 100%;
+        transition: color 0.3s ease;
+    }
+
+    .menu-listing a:hover {
+        color: #DC320F;
+    }
+
+    .auth-buttons {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .auth-buttons a {
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 5px;
+        font-size: 1.4rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .login {
+        background: white;
+        color: #DC320F;
+        border: 2px solid #DC320F;
+    }
+
+    .login:hover {
+        background: rgba(220, 50, 15, 0.1);
+    }
+
+    .signup {
+        background: #DC320F;
+        color: white;
+    }
+
+    .signup:hover {
+        background: #ff4d2e;
+    }
+}
+
+/* Style Tablet et Desktop (768px et plus) */
+@media (min-width: 768px) {
+    .mobile-menu {
+        display: none;
+    }
+
+    .menu {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        background: white;
+        box-shadow: 1px 1px 25px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+    }
+
+    .menu-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 15px 30px;
+    }
+
+    .logo {
+        display: block;
+        width: 64px;
+    }
+
+    .logo img {
+        width: 100%;
+    }
+
+    .menu-listing {
+        display: flex;
+        list-style: none;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .menu-listing li {
+        position: relative;
+    }
+
+    .menu-listing a {
+        color: black;
+        text-decoration: none;
+        padding: 20px;
+        font-size: 1.8rem;
+        display: block;
+        transition: color 0.3s ease;
+    }
+
+    .menu-listing a:hover {
+        color: #DC320F;
+    }
+
+    .menu-listing li::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        background: #DC320F;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        transition: width 0.3s ease;
+    }
+
+    .menu-listing li:hover::after {
+        width: 80%;
+    }
+
+    .auth-buttons {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .auth-buttons a {
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 1.6rem;
+        transition: all 0.3s ease;
+    }
+
+    .login {
+        background: white;
+        color: #DC320F;
+        border: 2px solid #DC320F;
+    }
+
+    .login:hover {
+        background: #DC320F;
+        color: white;
+    }
+
+    .signup {
+        background: #DC320F;
+        color: white;
+    }
+
+    .signup:hover {
+        background: #ff4d2e;
+    }
+}
