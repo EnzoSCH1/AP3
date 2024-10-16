@@ -6,7 +6,12 @@
 
 body {
     height: 400vh;
+    background-image: url("/image/Image\ menu.png");
+    background-repeat: no-repeat;
 }
+
+
+
 
 /* Style Mobile (jusqu'à 767px) */
 @media (max-width: 767px) {
