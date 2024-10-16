@@ -12,7 +12,7 @@
 <body>
     <div class="wrapper">
         <div class="form-box register">
-            <form action="/Pages/inscription.php" method="POST">
+            <form action="/Pages/inscription.html" method="POST">
                 <h1>S'inscrire</h1>
 
                 <div class="input-box">
@@ -45,29 +45,6 @@
                 <div class="login-link">
                     <p>Vous avez déjà un compte? <a href="/Pages/connexion.html">Se connecter</a></p>
                 </div>
-
-                <?php if (isset($_GET['error'])): ?>
-                <div class="error-message">
-                    <?php 
-                        $error = $_GET['error'];
-                        if ($error == "empty_fields") {
-                            echo "Veuillez remplir tous les champs.";
-                        } elseif ($error == "already_exists") {
-                            echo "Le pseudo ou l'email existe déjà.";
-                        } elseif ($error == "database_error") {
-                            echo "Erreur lors de l'inscription. Veuillez réessayer.";
-                        } elseif ($error == "field_too_long") {
-                            echo "Un ou plusieurs champs dépassent la longueur maximale autorisée (20 caractères).";
-                        }
-                        ?>
-                </div>
-                <?php endif; ?>
-
-                <?php if (isset($_GET['success'])): ?>
-                <div class="success-message">
-                    Inscription réussie ! Vous pouvez vous connecter.
-                </div>
-                <?php endif; ?>
             </form>
         </div>
     </div>
