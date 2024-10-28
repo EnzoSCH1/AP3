@@ -3,55 +3,6 @@ const pool = require('../database/database');
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 exports.getAllligue = async (req, res) => {
                 let conn = await pool.getConnection()
                 try {
