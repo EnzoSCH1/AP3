@@ -1,10 +1,18 @@
+const mariadb = require('mariadb');
 const express = require('express');
-const db = require('./database');
-const bodyParser = require('body-parser');
+let ligueRoute = require("./routes/ligueRoute")
+
 const cors = require('cors');
+
 const app = express();
-const bodyParser = require('body-parser');
-app.use(cors())
+app.use(cors());
+app.use(express.json());
+
+
 
 app.use('/api/ligue', ligueRoute);
-app.use('/api/user', userRoute)
+//app.use('/api/user', userRoute);
+
+app.listen(3000, () => {
+                console.log("Server à l'écoute sur le port 3000");
+});
