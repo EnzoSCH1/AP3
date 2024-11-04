@@ -1,11 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/style css/article.css">
 </head>
+
 <body>
-    <p>dfjgvjgvbefnkvfn</p>
+    <div id="header-placeholder"></div>
+
+    <script>
+        fetch("ap2.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("header-placeholder").innerHTML = data;
+
+                const script = document.createElement("script");
+                script.src = "script.js";
+                script.defer = true;
+                document.body.appendChild(script);
+            });
+    </script>
+
+    <div class="content-container">
+        <div class="foot">
+            <div class="text-content">
+                <h1>Football - Coupe de France</h1>
+                <p>Laurent Lewandowski : « Haguenau, c'est du très lourd »</p>
+            </div>
+            <img src="/image/foot.png" alt="foot">
+
+        </div>
+        <div class="basket">
+            <div class="text-content">
+                <h1>SLUC Nancy Espoirs : Iliam Fevry, un diamant à polir</h1>
+                <p>Le jeune basketteur de 18 ans, Iliam Fevry, est arrivé à Nancy à l'intersaison après cinq ans en
+                    Espagne, au
+                    Real Betis à Séville. Son retour en France coïncide avec une vraie volonté de passer un cap et il
+                    est sur la
+                    bonne voie.</p>
+            </div>
+            <img src="/image/basket.png" alt="basket">
+        </div>
+        <div class="volley">
+            <div class="text-content">
+                <h1>Le Tfoc n'a pas tenu la distance contre Marcq-en- Barœul</h1>
+                <p>Malgré de bonnes intentions, le Tfoc n'a pas réussi à contenir Marcq-en- Barœul et s'est incliné en
+                    quatre
+                    sets (1-3).</p>
+            </div>
+            <img src="/image/volley.png" alt="volley">
+
+        </div>
+    </div>
 </body>
+
 </html>

@@ -5,15 +5,50 @@
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Document</title>
+                <link rel="stylesheet" href="/style css/apropos.css">
+
 </head>
 
 <body>
-                <h1>A propos</h1>
-                <p>La Lorraine Sportive est une association à but non lucratif en lien avec la M2L, nous avons pour but
-                                de partager des articles, vidéos, photos… Toute l'actualité concernant les ligues.
+                <div id="header-placeholder"></div>
 
-                                Vous pourrez ici suivre toute l'actualité sportive locale, à la manière des grands
-                                journaux.</p>
+                <script>
+
+
+                                fetch("ap2.html")
+                                                .then(response => response.text())
+                                                .then(data => {
+                                                                document.getElementById("header-placeholder").innerHTML = data;
+
+
+                                                                const script = document.createElement("script");
+                                                                script.src = "script.js";
+                                                                script.defer = true;
+                                                                document.body.appendChild(script);
+
+                                                });
+                </script>
+                <div class="apropos">
+                                <h1>A propos</h1>
+                                <p> Vous pourrez ici suivre toute l'actualité sportive locale, à la manière des grands
+                                                journaux.</p>
+                                <p>Mais vous pourrez-aussi reserver des competitios et les complexes pour les acceuillir
+                                                Nous sommes reconnus pour la qualité de nos produits et services, ainsi
+                                                que pour notre
+                                                expertise pointue dans notre domaine. Notre équipe de professionnels
+                                                passionnés
+                                                travaille sans relâche pour vous offrir des solutions sur-mesure qui
+                                                répondent
+                                                parfaitement à vos objectifs.
+                                                N'hésitez pas à me poser toutes vos questions, je serai ravi d'y
+                                                répondre en détail et
+                                                de vous guider tout au long de notre collaboration. Je suis convaincu
+                                                que nous pourrons
+                                                trouver la solution idéale pour vous.
+                                </p>
+                </div>
+
+                <div>
 </body>
 
 </html>

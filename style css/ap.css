@@ -4,13 +4,32 @@
     box-sizing: border-box;
 }
 
-body {
-    height: 400vh;
-    background-image: url("/image/Image\ menu.png");
-    background-repeat: no-repeat;
+.sport {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
 }
 
+.sport img {
+    max-width: 100%;
+    height: 88vh;
+}
 
+@media (max-width: 768px) {
+    .sport {
+        margin-bottom: 1rem;
+    }
+
+    .sport img {
+        max-width: 80%;
+    }
+}
+
+@media (max-width: 480px) {
+    .sport img {
+        max-width: 60%;
+    }
+}
 
 
 /* Style Mobile (jusqu'à 767px) */

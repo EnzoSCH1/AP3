@@ -1,18 +1,24 @@
 const mariadb = require('mariadb');
 const express = require('express');
-let ligueRoute = require("./routes/ligueRoute")
-
-const cors = require('cors');
-
 const app = express();
-app.use(cors());
-app.use(express.json());
+require('dotenv').config();
+let userRoute = require('./Routes/userRoute')
+app.use(express.json())
 
+const pool = mariadb.createPool({
+                host: 'localhost',
+                database: 'test',
+                user: 'root',
+                password: '',
+});
+app.use('/user', userRoute)
 
-
-app.use('/api/ligue', ligueRoute);
-//app.use('/api/user', userRoute);
 
 app.listen(3000, () => {
-                console.log("Server à l'écoute sur le port 3000");
+                console.log("Server à l'écoute");
 });
+
+
+
+
+

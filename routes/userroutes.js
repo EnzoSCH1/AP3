@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controller/userController')
+const userController = require('../Controllers/userController')
 
-//Route pour voir tout ls cotroller
 
-router.get('/user'.userController.getAlluser)
-router.get('/user/:id'.userController.getuserById)
 
-//Ajouter d'autre routes aux esois
+router.get('/user', userController.getAlluser);
+router.post('/register', userController.Register);
+router.post('/login', userController.Login);
+
+
 module.exports = router;    
