@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
+    <link rel="stylesheet" href="../style css/formulaire.css">
     <!-- Utilisation de Font Awesome avec une clé valide -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="../style css/formulaire.css">
     <script src="../script.js"></script>
 </head>
 
@@ -18,20 +18,27 @@
                 <h1>Se connecter</h1>
 
                 <div class="input-box">
-                    <input type="text" name="username" id="username" placeholder="Email ou Pseudo" required />
-                    <!-- Icône de l'enveloppe -->
-                    <i class="fa-solid fa-envelope input-icon"></i>
+                    <input type="text" name="username" placeholder="Email ou Pseudo" required />
+                    <img src="../image/icons8-message-rempli-60.png" alt="email icon" class="input-icon">
                 </div>
 
                 <div class="input-box">
-                    <input type="password" id="mdp" placeholder="Mot de passe" required />
-                    <i class="fa-solid fa-eye input-icon" id="togglePassword" onclick="togglePasswordVisibility()"></i>
+                    <input type="password" name="password" placeholder="Mot de passe" required />
+                    <img src="../image/icons8-ouvrir-60.png" alt="password icon" class="input-icon">
+                </div>
+
+                <div class="remember-forgot">
+                    <label>
+                        <input type="checkbox" name="remember"> Se souvenir de moi
+                    </label>
+                    <p class="forgot-password">
+                        <a href="../Pages/forgotpassword.php">Mot de passe oublié?</a>
+                    </p>
                 </div>
 
                 <button type="submit">Se connecter</button>
-
                 <div class="register-link">
-                    <p>Vous n'avez pas de compte? <a href="/Pages/inscription.html">S'inscrire</a></p>
+                    <p>Vous n'avez pas de compte? <a href="../Pages/inscription.html">S'inscrire</a></p>
                 </div>
             </form>
         </div>
