@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Profil Utilisateur - M2L Sport</title>
+                <link rel="stylesheet" href="../style css/profile.css">
+                <script src="../script.js"></script>
+</head>
+
+<body>
+                <div class="wrapper">
+                                <div class="profile-box">
+                                                <h1>Profil Utilisateur</h1>
+                                                <img src="/api/placeholder/100/100" alt="Photo de profil"
+                                                                class="profile-pic">
+                                                <div class="info-group">
+                                                                <label>Nom</label>
+                                                                <span id="userName"></span>
+                                                </div>
+                                                <div class="info-group">
+                                                                <label>Prénom</label>
+                                                                <span id="userFirstName"></span>
+                                                </div>
+                                                <div class="info-group">
+                                                                <label>Email</label>
+                                                                <span id="userEmail"></span>
+                                                </div>
+                                                <div class="info-group">
+                                                                <label>Sport pratiqué</label>
+                                                                <span id="userSport"></span>
+                                                </div>
+                                                <div class="info-group">
+                                                                <label>Niveau</label>
+                                                                <span id="userLevel"></span>
+                                                </div>
+                                                <button onclick="openEditForm()" class="edit-btn">Modifier le
+                                                                profil</button>
+                                                <button id="logout-button" class="logout-btn">Déconnexion</button>
+                                </div>
+                </div>
+
+                <!-- Overlay pour le formulaire d'édition -->
+                <div class="overlay" id="overlay" style="display: none;" onclick="closeEditForm()"></div>
+
+                <!-- Formulaire d'édition -->
+                <div class="edit-form" id="editForm" style="display: none;">
+                                <h2>Modifier le Profil</h2>
+                                <form id="profileEditForm" onsubmit="saveProfile(event)">
+                                                <div class="form-group">
+                                                                <label for="editNom">Nom</label>
+                                                                <input type="text" id="editNom" placeholder="Votre nom"
+                                                                                required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                                <label for="editPrenom">Prénom</label>
+                                                                <input type="text" id="editPrenom"
+                                                                                placeholder="Votre prénom" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                                <label for="editEmail">Email</label>
+                                                                <input type="email" id="editEmail"
+                                                                                placeholder="Votre email" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                                <label for="editSport">Sport pratiqué</label>
+                                                                <input type="text" id="editSport"
+                                                                                placeholder="Votre sport">
+                                                </div>
+
+                                                <div class="form-group">
+                                                                <label for="editLevel">Niveau</label>
+                                                                <select id="editLevel">
+                                                                                <option value="">Sélectionnez votre
+                                                                                                niveau</option>
+                                                                                <option value="Débutant">Débutant
+                                                                                </option>
+                                                                                <option value="Intermédiaire">
+                                                                                                Intermédiaire</option>
+                                                                                <option value="Avancé">Avancé</option>
+                                                                                <option value="Expert">Expert</option>
+                                                                </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                                <label for="editPassword">Nouveau mot de passe
+                                                                                (optionnel)</label>
+                                                                <input type="password" id="editPassword"
+                                                                                placeholder="Laissez vide pour ne pas changer">
+                                                </div>
+
+                                                <div class="form-buttons">
+                                                                <button type="submit"
+                                                                                class="save-btn">Enregistrer</button>
+                                                                <button type="button" onclick="closeEditForm()"
+                                                                                class="cancel-btn">Annuler</button>
+                                                </div>
+                                </form>
+                </div>
+
+
+</body>
+
+</html>

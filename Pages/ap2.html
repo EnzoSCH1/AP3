@@ -8,6 +8,7 @@
                 <link rel="stylesheet" href="/style css/ap.css">
                 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
                 <link rel="icon" href="data:,">
+                <link rel="stylesheet" href="../script.js">
 </head>
 
 <body>
@@ -40,7 +41,7 @@
                                                                                                 alt="Logo M2L">
                                                                 </a>
                                                                 <ul class="menu-listing">
-                                                                                <li><a href="/Pages/Apropos.html">A
+                                                                                <li><a href="/Pages/Apropos.html">À
                                                                                                                 propos</a>
                                                                                 </li>
                                                                                 <li><a href="/Pages/ligue.html">Ligues</a>
@@ -51,25 +52,35 @@
                                                                                 </li>
                                                                 </ul>
                                                                 <div class="auth-buttons">
+                                                                                <!-- Ces boutons seront cachés si l'utilisateur est connecté -->
                                                                                 <a href="/Pages/connexion.html"
-                                                                                                class="login">Se
+                                                                                                class="login"
+                                                                                                id="login-link">Se
                                                                                                 connecter</a>
                                                                                 <a href="/Pages/inscription.html"
-                                                                                                class="signup">S'inscrire</a>
+                                                                                                class="signup"
+                                                                                                id="register-link">S'inscrire</a>
+                                                                                <!-- Icône de profil qui sera affichée après connexion -->
+                                                                                <div id="profile-icon"
+                                                                                                style="display: none;">
+                                                                                                <a
+                                                                                                                href="/Pages/profile.html">
+                                                                                                                <div id="profile-icon"
+                                                                                                                                style="display: none;">
+                                                                                                                                <i
+                                                                                                                                                class="fa-regular fa-user "></i>
+                                                                                                                </div>
+                                                                                                </a>
+                                                                                </div>
                                                                 </div>
                                                 </div>
                                                 <div class="sport">
                                                                 <img src="/image/Image menu.png" alt="">
                                                 </div>
-
                                 </div>
                 </header>
+                <main></main>
 
-                <script>
-                                document.getElementById('toggler').addEventListener('click', function () {
-                                                document.querySelector('.menu').classList.toggle('active');
-                                });
-                </script>
 
                 <footer>
                 </footer>

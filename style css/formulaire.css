@@ -63,16 +63,19 @@ body {
 }
 
 /* Style des icônes */
-.input-box img {
+.input-icon {
+                color: #26292b;
+                /* Couleur orange */
+                font-size: 1.2rem;
+                /* Ajuste la taille des icônes selon tes besoins */
+                margin-left: 0px;
+                /* Ajuste la position de l'icône dans le champ, si nécessaire */
                 position: absolute;
-                right: 20px;
+                right: 18px;
                 top: 50%;
                 transform: translateY(-50%);
-                width: 20px;
-                height: 20px;
-                opacity: 0.7;
-                color: black;
 }
+
 
 /* Style remember-forgot (pour la page connexion) */
 .remember-forgot {
