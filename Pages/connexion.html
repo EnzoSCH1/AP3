@@ -5,16 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion</title>
+<<<<<<< HEAD
     <link rel="stylesheet" href="../style css/formulaire.css">
+=======
+    <!-- Utilisation de Font Awesome avec une clé valide -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../style css/formulaire.css">
+    <script src="../script.js"></script>
+>>>>>>> f7d32ae666343b5830d6c67870f80427ed3dfeb4
 </head>
 
 <body>
-    <main class="wrapper">
+    <div class="wrapper">
         <div class="form-box login">
-            <form action="" method="POST"> <!-- Le formulaire envoie les données au même fichier -->
+            <form id="loginForm">
                 <h1>Se connecter</h1>
 
                 <div class="input-box">
+<<<<<<< HEAD
                     <input type="text" name="username" placeholder="Email ou Pseudo" required />
                     <img src="../image/icons8-message-rempli-60.png" alt="email icon" class="input-icon">
                 </div>
@@ -34,16 +42,26 @@
                 </div>
 
                 <button type="submit" name="Connexion">Se connecter</button>
+=======
+                    <input type="text" name="username" id="username" placeholder="Email ou Pseudo" required />
+                    <!-- Icône de l'enveloppe -->
+                    <i class="fa-solid fa-envelope input-icon"></i>
+                </div>
+
+                <div class="input-box">
+                    <input type="password" id="mdp" placeholder="Mot de passe" required />
+                    <i class="fa-solid fa-eye input-icon" id="togglePassword" onclick="togglePasswordVisibility()"></i>
+                </div>
+
+                <button type="submit">Se connecter</button>
+>>>>>>> f7d32ae666343b5830d6c67870f80427ed3dfeb4
 
                 <div class="register-link">
                     <p>Vous n'avez pas de compte? <a href="../Pages/inscription.html">S'inscrire</a></p>
                 </div>
             </form>
         </div>
-    </main>
-    <footer>
-                    
-    </footer>
+    </div>
 </body>
 
 </html>

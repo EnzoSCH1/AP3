@@ -31,7 +31,6 @@
     }
 }
 
-
 /* Style Mobile (jusqu'à 767px) */
 @media (max-width: 767px) {
     .mobile-menu {
@@ -58,12 +57,6 @@
         align-items: center;
         gap: 15px;
     }
-
-    /* .mobile-logo {
-        width: 40px;
-        height: 40px;
-        object-fit: contain;
-    } */
 
     .mobile-title {
         font-size: 2.5rem;
@@ -96,11 +89,6 @@
         color: #DC320F;
     }
 
-    #toggler .material-icons {
-        font-size: 24px;
-    }
-
-    /* Menu déroulant */
     .menu {
         display: none;
         width: 100%;
