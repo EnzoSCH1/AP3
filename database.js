@@ -1,10 +1,12 @@
+// database.js
 const mariadb = require('mariadb');
 
 const pool = mariadb.createPool({
-                host: process.env.DB_HOST,
-                database: process.env.DB_USER,
-                user: process.env.DB_PWD,
-                password: process.env.DB_DTB,
+                host: 'localhost',
+                user: 'root',
+                password: '',
+                database: 'm2l',
+
 });
 
-module.exports = pool;
+module.exports = pool; 

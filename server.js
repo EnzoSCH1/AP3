@@ -1,25 +1,20 @@
-const mariadb = require('mariadb');
+// app.js
 const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const userRoute = require('./Routes/userRoute');
+
+dotenv.config();
 const app = express();
-const cors = require("cors")
-require('dotenv').config();
-let userRoute = require('./Routes/userRoute')
-app.use(express.json())
 
-const pool = mariadb.createPool({
-                host: process.env.DB_HOST,
-                database: process.env.DB_USER,
-                user: process.env.DB_PWD,
-                password: process.env.DB_DTB,
-});
-app.use('/user', userRoute)
+// Middleware
+app.use(cors());
+app.use(express.json());
 
+// Routes
+app.use('/user', userRoute);
 
+// Lancer le serveur
 app.listen(3000, () => {
-                console.log("Server à l'écoute");
+                console.log('Server à l\'écoute sur le port 3000');
 });
-
-
-
-
-
