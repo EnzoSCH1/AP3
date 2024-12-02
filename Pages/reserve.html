@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Réserver un Espace</title>
+                <link rel="stylesheet" href="../style_css/reserve.css">
+                <script src="../resrvations.js" defer></script>
+</head>
+
+<body>
+
+                <header>
+                                <h1>Réserver un Espace</h1>
+                </header>
+
+                <section id="reservationForm">
+                                <h2>Formulaire de Réservation</h2>
+
+                                <!-- Formulaire de réservation -->
+                                <form id="formReservation">
+                                                <!-- Champ caché pour l'ID de l'espace -->
+                                                <input type="hidden" id="space_id" name="space_id" value="">
+
+                                                <label for="start_date">Date de début</label>
+                                                <input type="datetime-local" id="start_date" name="start_date" required>
+
+                                                <label for="end_date">Date de fin</label>
+                                                <input type="datetime-local" id="end_date" name="end_date" required>
+
+                                                <label for="user_name">Nom</label>
+                                                <input type="text" id="user_name" name="user_name" required>
+
+                                                <button type="submit">Confirmer la réservation</button>
+                                </form>
+                </section>
+
+</body>
+
+</html>

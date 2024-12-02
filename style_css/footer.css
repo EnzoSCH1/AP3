@@ -1,0 +1,17 @@
+.footer {
+                background-color: #fff;
+                color: black;
+                text-align: center;
+                padding: 15px 0;
+                font-size: 14px;
+}
+
+.footer a {
+                color: #ff3333;
+                text-decoration: none;
+                margin: 0 10px;
+}
+
+.footer a:hover {
+                text-decoration: underline;
+}

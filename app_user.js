@@ -13,6 +13,7 @@ function togglePasswordVisibility() {
                                 toggleIcon.classList.add('fa-eye');
                 }
 }
+
 document.addEventListener('DOMContentLoaded', function () {
                 // Gestionnaire du formulaire d'inscription
                 const registerForm = document.getElementById('registerForm');
@@ -50,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                                                 .then(() => {
                                                                                 alert('Inscription réussie !');
                                                                                 // Redirection vers la page de connexion
-                                                                                window.location.href = '/Pages/connexion.html';
+                                                                                window.location.href = 'connexion.html';
                                                                 })
                                                                 .catch(error => {
                                                                                 console.error('Erreur:', error);
@@ -58,54 +59,109 @@ document.addEventListener('DOMContentLoaded', function () {
                                                                 });
                                 });
                 }
-});
 
+                // Gestionnaire du formulaire de connexion
+                const loginForm = document.getElementById('loginForm');
+                if (loginForm) {
+                                loginForm.addEventListener('submit', async function (event) {
+                                                event.preventDefault();
 
+                                                const email = document.getElementById('email').value.trim();
+                                                const mdp = document.getElementById('mdp').value;
+                                                const rememberMe = document.querySelector('input[name="remember"]')?.checked || false;
 
-const loginForm = document.getElementById('loginForm');
-if (loginForm) {
-                loginForm.addEventListener('submit', function (event) {
-                                event.preventDefault();
+                                                if (!validateLogin(email, mdp)) {
+                                                                return;
+                                                }
 
-                                const email = document.getElementById('email').value.trim();
-                                const mdp = document.getElementById('mdp').value;
-                                const rememberMe = document.querySelector('input[name="remember"]').checked;
+                                                const submitButton = loginForm.querySelector('button[type="submit"]');
+                                                const originalButtonText = submitButton.textContent;
 
-                                if (!validateLogin(email, mdp)) {
-                                                return;
-                                }
+                                                try {
+                                                                submitButton.disabled = true;
+                                                                submitButton.textContent = 'Connexion en cours...';
 
-                                fetch('http://localhost:3000/user/login', {
-                                                method: 'POST',
-                                                headers: {
-                                                                'Content-Type': 'application/json',
-                                                },
-                                                body: JSON.stringify({
-                                                                email,
-                                                                password: mdp,
-                                                                rememberMe
-                                                })
-                                })
-                                                .then(response => {
-                                                                if (!response.ok) {
-                                                                                throw new Error('Identifiants incorrects');
+                                                                const response = await fetch('http://localhost:3000/user/login', {
+                                                                                method: 'POST',
+                                                                                headers: {
+                                                                                                'Content-Type': 'application/json',
+                                                                                },
+                                                                                body: JSON.stringify({
+                                                                                                email,
+                                                                                                password: mdp,
+                                                                                                rememberMe,
+                                                                                }),
+                                                                });
+
+                                                                console.log('Response status:', response.status);
+                                                                console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+                                                                const responseText = await response.text();
+                                                                console.log('Raw response:', responseText);
+
+                                                                let data;
+                                                                try {
+                                                                                data = JSON.parse(responseText);
+                                                                } catch (parseError) {
+                                                                                console.error('Erreur de parsing JSON:', parseError);
+                                                                                showError('Erreur de réponse du serveur');
+                                                                                return;
                                                                 }
-                                                                return response.json();
-                                                })
-                                                .then(data => {
-                                                                // Stocker le token dans localStorage ou un cookie
-                                                                localStorage.setItem('token', data.token);
 
-                                                                // Redirection vers la page d'accueil après une connexion réussie
-                                                                window.location.href = '/Pages/ap2.html';
-                                                })
-                                                .catch(error => {
+                                                                console.log('Réponse du serveur:', { status: response.status, data: data });
+
+                                                                if (response.ok) {
+                                                                                localStorage.setItem('token', data.token);
+                                                                                if (data.user) {
+                                                                                                localStorage.setItem('user', JSON.stringify(data.user));
+                                                                                }
+                                                                                window.location.href = 'ap2.html';
+                                                                } else {
+                                                                                showError(data.error || 'Une erreur est survenue');
+                                                                }
+                                                } catch (error) {
                                                                 console.error('Erreur de connexion:', error);
-                                                                alert('Échec de la connexion. Vérifiez vos identifiants.');
-                                                });
-                });
-}
+                                                                showError('Erreur de connexion au serveur. Veuillez réessayer.');
+                                                } finally {
+                                                                submitButton.disabled = false;
+                                                                submitButton.textContent = originalButtonText;
+                                                }
+                                });
+                }
+                // Vérification de connexion pour toutes les pages
+                const token = localStorage.getItem('token');
+                const user = JSON.parse(localStorage.getItem('user'));
 
+                const authButtons = document.querySelector('.auth-buttons');
+
+                if (authButtons) {
+                                if (token && user) {
+                                                // Supprime les boutons "Se connecter" et "S'inscrire"
+                                                authButtons.innerHTML = '';
+
+                                                // Ajoute l'icône de profil
+                                                const profileIcon = document.createElement('a');
+                                                profileIcon.href = '/Pages/profile.html';
+                                                profileIcon.innerHTML = `<i class="fa-regular fa-user input-icon"></i>`;
+                                                profileIcon.style.fontSize = '24px';
+                                                profileIcon.style.color = '#ff3333';
+                                                profileIcon.title = `Profil de ${user.email}`;
+                                                profileIcon.style.marginRight = '15px';  // Un petit espacement à droite
+                                                authButtons.appendChild(profileIcon);
+
+                                                // Ajoute un lien vers la page de réservation dans la même liste
+                                                const reservationLink = document.createElement('a');
+                                                reservationLink.href = '../Pages/reservations.html';  // Mets ici l'URL correcte de la page de réservation
+                                                reservationLink.innerText = 'Réservation';
+                                                reservationLink.style.fontSize = '28px';  // Taille du texte ajustée
+                                                reservationLink.style.color = '#000000';
+                                                authButtons.appendChild(reservationLink);
+                                }
+                } else {
+                                console.error("Élément '.auth-buttons' non trouvé dans la page.");
+                }
+
+});
 
 // Fonction de validation de l'inscription
 function validateForm(nom, prenom, email, mdp) {
@@ -131,20 +187,52 @@ function validateForm(nom, prenom, email, mdp) {
                 return true; // Si tout est valide
 }
 
-// Fonction de validation de la connexion
-function validateLogin(email, mdp) {
-                // Vérification du format de l'email
-                const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                if (!emailRegex.test(email)) {
-                                alert('Veuillez entrer une adresse email valide');
-                                return false;
-                }
-
-                // Vérification du mot de passe (doit être non vide)
-                if (!mdp) {
-                                alert('Le mot de passe est requis');
-                                return false;
-                }
-
-                return true; // Si tout est valide
+// Fonction pour afficher les erreurs
+function showError(message) {
+                const errorDiv = document.getElementById('loginError') || createErrorDiv();
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
 }
+
+// Créer un div pour les erreurs s'il n'existe pas
+function createErrorDiv() {
+                const loginForm = document.getElementById('loginForm');
+                const errorDiv = document.createElement('div');
+                errorDiv.id = 'loginError';
+                errorDiv.style.color = 'red';
+                errorDiv.style.marginTop = '10px';
+                loginForm.appendChild(errorDiv);
+                return errorDiv;
+}
+
+// Fonction de validation de connexion
+function validateLogin(email, mdp) {
+                const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+                if (!email) {
+                                showError('L\'email est requis');
+                                return false;
+                }
+
+                if (!emailRegex.test(email)) {
+                                showError('Veuillez entrer une adresse email valide');
+                                return false;
+                }
+
+                if (!mdp) {
+                                showError('Le mot de passe est requis');
+                                return false;
+                }
+
+                return true;
+}
+
+
+document.addEventListener('DOMContentLoaded', function () {
+                const togglerButton = document.getElementById('toggler');
+                if (togglerButton) {
+                                togglerButton.addEventListener('click', function () {
+                                                document.querySelector('.menu').classList.toggle('active');
+                                });
+                }
+});

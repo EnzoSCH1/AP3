@@ -2,6 +2,8 @@ const pool = require('../database');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+
+
 // userController.js
 
 exports.getAlluser = async (req, res) => {
@@ -24,7 +26,6 @@ exports.getAlluser = async (req, res) => {
                                 if (db) db.release(); // Libérer la connexion même en cas d'erreur
                 }
 };
-
 
 exports.Register = async (req, res) => {
                 let conn;
@@ -67,52 +68,88 @@ exports.Register = async (req, res) => {
 };
 
 
+
+
 exports.Login = async (req, res) => {
                 let conn;
                 try {
                                 const { email, password } = req.body;
 
-                                // Vérification des données d'entrée
-                                if (!email || !password) {
-                                                return res.status(400).json({ error: 'Email et mot de passe requis' });
-                                }
+                                // Log détaillé
+                                console.log('Tentative de connexion:', { email, password });
 
                                 conn = await pool.getConnection();
-                                console.log("Connexion réussie");
 
-                                // Vérifier si l'utilisateur existe
+                                // Recherche de l'utilisateur avec plus de logs
                                 const result = await conn.query('SELECT * FROM user WHERE email = ?', [email]);
-                                console.log("Résultat de la requête:", result);
+                                console.log('Résultats de recherche utilisateur:', {
+                                                resultCount: result.length,
+                                                userFound: result.length > 0 ? {
+                                                                id: result[0].id_user,
+                                                                email: result[0].email,
+                                                                // Masquez le mot de passe pour la sécurité
+                                                                passwordHash: result[0].password ? '[HASH PRÉSENT]' : '[PAS DE HASH]'
+                                                } : null
+                                });
 
-                                conn.release();
-
+                                // Vérification de l'existence de l'utilisateur
                                 if (result.length === 0) {
-                                                return res.status(400).json({ error: 'Utilisateur non trouvé.' });
+                                                console.log(`Aucun utilisateur trouvé avec l'email: ${email}`);
+                                                return res.status(400).json({ error: 'Identifiants incorrects' });
                                 }
 
-                                const user = result[0]; // Utilisateur trouvé dans la base de données
-                                console.log("Utilisateur trouvé:", user);
+                                const user = result[0];
 
-                                // Comparer les mots de passe
-                                const isPasswordValid = await bcrypt.compare(password, user.password);
-                                if (!isPasswordValid) {
-                                                return res.status(400).json({ error: 'Mot de passe incorrect.' });
+                                // Vérification du mot de passe avec plus de détails
+                                try {
+                                                const isPasswordValid = await bcrypt.compare(password, user.password);
+                                                console.log('Résultat de la vérification du mot de passe:', {
+                                                                isPasswordValid,
+                                                                inputPassword: password,
+                                                                storedHashLength: user.password ? user.password.length : 'Pas de hash'
+                                                });
+
+                                                if (!isPasswordValid) {
+                                                                console.log('Mot de passe incorrect pour l\'utilisateur:', email);
+                                                                return res.status(400).json({ error: 'Identifiants incorrects' });
+                                                }
+
+                                                // Génération du token et réponse
+                                                const token = jwt.sign(
+                                                                { id_user: user.id_user, email: user.email },
+                                                                process.env.JWT_SECRET,
+                                                                { expiresIn: '1h' }
+                                                );
+
+                                                res.json({
+                                                                token,
+                                                                message: 'Connexion réussie',
+                                                                user: {
+                                                                                id: user.id_user,
+                                                                                email: user.email
+                                                                }
+                                                });
+
+                                } catch (bcryptError) {
+                                                console.error("Erreur lors de la vérification du mot de passe:", bcryptError);
+                                                return res.status(500).json({
+                                                                error: "Erreur lors de la vérification des identifiants",
+                                                                details: process.env.NODE_ENV === 'development' ? bcryptError.message : null
+                                                });
                                 }
 
-                                // Générer un token JWT
-                                const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-                                res.json({ token, message: 'Connexion réussie' });
                 } catch (error) {
-                                console.error('Erreur de connexion:', error);
+                                console.error('Erreur générale de connexion:', error);
+                                res.status(500).json({
+                                                error: "Erreur lors de la connexion",
+                                                details: process.env.NODE_ENV === 'development' ? error.message : null
+                                });
+                } finally {
                                 if (conn) conn.release();
-                                res.status(500).json({ error: "Erreur lors de la connexion" });
                 }
 };
 
-
-
-
+// Autres méthodes du contrôleur (inscription, etc.) à ajouter ici
 exports.getProfile = async (req, res) => {
                 try {
                                 const conn = await pool.getConnection();

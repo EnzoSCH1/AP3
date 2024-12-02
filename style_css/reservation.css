@@ -1,0 +1,121 @@
+/* Reset et styles de base */
+* {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: Arial, sans-serif;
+}
+
+body {
+                background-color: #f5f5f5;
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                /* Centrage du corps de la page */
+                flex-direction: column;
+                padding-top: 40px;
+}
+
+header {
+                text-align: center;
+                margin-bottom: 40px;
+}
+
+header h1 {
+                color: #333;
+                font-size: 32px;
+                margin-bottom: 10px;
+}
+
+/* Style pour la carte de réservation */
+.wrapper {
+                width: 100%;
+                max-width: 840px;
+                /* Taille augmentée x2 */
+                background-color: #fff;
+                border-radius: 12px;
+                padding: 40px;
+                /* Augmentation de l'espace intérieur */
+                box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1);
+                /* Ombre plus légère */
+                text-align: center;
+                margin-bottom: 30px;
+                /* Espace entre les divs */
+}
+
+.reservation-card {
+                margin-bottom: 20px;
+}
+
+.reservation-image {
+                width: 100%;
+                border-radius: 12px;
+                margin-bottom: 20px;
+}
+
+.reservation-card h3 {
+                color: #DC320F;
+                /* Couleur orange */
+                font-size: 28px;
+                /* Taille du titre augmentée */
+                margin-bottom: 10px;
+}
+
+.reservation-card p {
+                color: #666;
+                font-size: 18px;
+                /* Taille de texte augmentée */
+                margin-bottom: 30px;
+}
+
+/* Style du bouton de réservation */
+.reserve-btn {
+                width: 200px;
+                /* Largeur du bouton ajustée */
+                height: 50px;
+                background-color: #DC320F;
+                /* Couleur orange */
+                color: white;
+                border: none;
+                border-radius: 25px;
+                font-size: 18px;
+                /* Taille de police ajustée */
+                font-weight: 600;
+                cursor: pointer;
+                padding: 10px;
+                /* Légère marge intérieure */
+                transition: background-color 0.3s ease;
+                margin-top: 20px;
+                /* Marge au dessus du bouton */
+                position: relative;
+                left: 50%;
+                /* Centrage horizontal */
+                transform: translateX(-50%);
+                /* Centrage absolu */
+}
+
+.reserve-btn:hover {
+                background-color: #ff4d2e;
+                /* Couleur orange clair au survol */
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+                .wrapper {
+                                width: 90%;
+                                padding: 20px;
+                }
+
+                .reservation-card h3 {
+                                font-size: 24px;
+                }
+
+                .reservation-card p {
+                                font-size: 16px;
+                }
+
+                .reserve-btn {
+                                font-size: 16px;
+                }
+}

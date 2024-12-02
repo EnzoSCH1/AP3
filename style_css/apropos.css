@@ -4,17 +4,20 @@ body {
                 padding: 0;
 }
 
-.apropos {
+.apropos,
+.ligue-container {
                 max-width: 1000px;
-
-                margin-left: 20rem;
+                margin: 0 auto;
+                /* Centrage horizontal */
+                padding: 0 1rem;
+                /* Ajout de padding pour les petits écrans */
                 text-align: left;
-
 }
 
 h1 {
                 font-size: 2rem;
-                margin-bottom: 1rem;
+                margin-bottom: 1.5rem;
+                /* Uniformisation avec la section ligue */
 }
 
 p {
@@ -22,19 +25,34 @@ p {
                 line-height: 1.5;
                 margin-bottom: 1rem;
                 text-align: left;
+}
 
+.ligue-list {
+                padding: 0;
+                /* list-style-type: none; */
+                /* Suppression des puces */
+}
+
+.ligue-list li {
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
 }
 
 @media (max-width: 768px) {
-                .apropos {
+
+                .apropos,
+                .ligue-container {
                                 margin: 1.5rem 1rem;
+                                /* Ajustement de la marge pour les petits écrans */
                 }
 
                 h1 {
                                 font-size: 1.75rem;
+                                /* Réduction de la taille pour les titres */
                 }
 
                 p {
                                 font-size: 0.95rem;
+                                /* Réduction de la taille pour les paragraphes */
                 }
 }
