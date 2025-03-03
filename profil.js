@@ -1,19 +1,20 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
                 // Récupérer les informations utilisateur depuis localStorage
-                const user = JSON.parse(localStorage.getItem('user'));
+                let user = JSON.parse(localStorage.getItem('user'));
+                let token = localStorage.getItem('token');
 
-                if (!user) {
+                if (!user || !token) {
                                 alert('Aucun utilisateur connecté. Redirection vers la page de connexion.');
-                                window.location.href = 'connexion.html'; // Redirection si pas d'utilisateur connecté
+                                window.location.href = 'connexion.html';
                                 return;
                 }
 
+                // Vérifier si le token est valide, sinon le rafraîchir
+                token = await ensureTokenValid(token);
+                if (!token) return; // Si le token est invalide après rafraîchissement, redirection
+
                 // Affichage des informations utilisateur
-                document.getElementById('userName').textContent = user.nom || 'Non renseigné';
-                document.getElementById('userFirstName').textContent = user.prenom || 'Non renseigné';
-                document.getElementById('userEmail').textContent = user.email || 'Non renseigné';
-                document.getElementById('userSport').textContent = user.sport || 'Non renseigné';
-                document.getElementById('userLevel').textContent = user.niveau || 'Non renseigné';
+                updateProfileUI(user);
 
                 // Ouvrir le formulaire d'édition
                 window.openEditForm = function () {
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 };
 
                 // Sauvegarder les modifications du profil
-                window.saveProfile = function (event) {
+                window.saveProfile = async function (event) {
                                 event.preventDefault();
 
                                 const updatedUser = {
@@ -48,42 +49,47 @@ document.addEventListener('DOMContentLoaded', function () {
 
                                 const newPassword = document.getElementById('editPassword').value.trim();
 
-                                // Mise à jour sur le serveur
-                                fetch('http://localhost:3000/user/update', {
-                                                method: 'PUT',
-                                                headers: {
-                                                                'Content-Type': 'application/json',
-                                                                Authorization: `Bearer ${localStorage.getItem('token')}`,
-                                                },
-                                                body: JSON.stringify({
-                                                                ...updatedUser,
-                                                                password: newPassword || undefined, // Envoie seulement si un mot de passe est renseigné
-                                                }),
-                                })
-                                                .then(response => {
-                                                                if (!response.ok) {
-                                                                                throw new Error('Erreur lors de la mise à jour du profil.');
-                                                                }
-                                                                return response.json();
-                                                })
-                                                .then(data => {
-                                                                // Mise à jour du profil dans localStorage
-                                                                localStorage.setItem('user', JSON.stringify(data.user));
+                                try {
+                                                // Vérifier si le token est valide avant d'envoyer la requête
+                                                token = await ensureTokenValid(token);
+                                                if (!token) return;
 
-                                                                // Mise à jour de l'affichage
-                                                                document.getElementById('userName').textContent = data.user.nom || 'Non renseigné';
-                                                                document.getElementById('userFirstName').textContent = data.user.prenom || 'Non renseigné';
-                                                                document.getElementById('userEmail').textContent = data.user.email || 'Non renseigné';
-                                                                document.getElementById('userSport').textContent = data.user.sport || 'Non renseigné';
-                                                                document.getElementById('userLevel').textContent = data.user.niveau || 'Non renseigné';
+                                                console.log("Données envoyées :", { ...updatedUser, password: newPassword || undefined });
+                                                console.log("Token envoyé :", token);
 
-                                                                alert('Profil mis à jour avec succès !');
-                                                                closeEditForm();
-                                                })
-                                                .catch(error => {
-                                                                console.error('Erreur:', error);
-                                                                alert('Échec de la mise à jour. Veuillez réessayer.');
+                                                const response = await fetch('http://localhost:3000/user/update', {
+                                                                method: 'PUT',
+                                                                headers: {
+                                                                                'Content-Type': 'application/json',
+                                                                                Authorization: `Bearer ${token}`,
+                                                                },
+                                                                body: JSON.stringify({
+                                                                                ...updatedUser,
+                                                                                password: newPassword || undefined, // Envoie seulement si un mot de passe est renseigné
+                                                                }),
                                                 });
+
+                                                const data = await response.json();
+                                                console.log("Réponse serveur :", data);
+
+                                                if (!response.ok) {
+                                                                throw new Error(data.error || 'Erreur lors de la mise à jour du profil.');
+                                                }
+
+                                                // Mise à jour du profil dans localStorage
+                                                localStorage.setItem('user', JSON.stringify(data.user));
+                                                user = data.user; // Mettre à jour la variable user
+
+                                                // Mise à jour de l'affichage
+                                                updateProfileUI(user);
+
+                                                alert('Profil mis à jour avec succès !');
+                                                closeEditForm();
+
+                                } catch (error) {
+                                                console.error('Erreur:', error);
+                                                alert(error.message);
+                                }
                 };
 
                 // Déconnexion
@@ -94,3 +100,50 @@ document.addEventListener('DOMContentLoaded', function () {
                                 window.location.href = 'connexion.html';
                 });
 });
+
+// 🔄 Rafraîchir le token si expiré
+async function refreshToken() {
+                const refreshToken = localStorage.getItem('refreshToken');
+                if (!refreshToken) {
+                                console.error("Aucun refresh token disponible.");
+                                window.location.href = 'connexion.html';
+                                return null;
+                }
+
+                try {
+                                const response = await fetch('http://localhost:3000/user/refresh', {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ refreshToken })
+                                });
+
+                                const data = await response.json();
+                                if (!response.ok) throw new Error(data.error);
+
+                                localStorage.setItem('token', data.token); // Met à jour le token
+                                console.log('Nouveau token stocké:', data.token);
+                                return data.token;
+                } catch (error) {
+                                console.error('Erreur de rafraîchissement du token:', error);
+                                window.location.href = 'connexion.html'; // Forcer la reconnexion
+                                return null;
+                }
+}
+
+// ✅ Vérifier si le token est valide et le rafraîchir si besoin
+async function ensureTokenValid(token) {
+                if (!token) {
+                                console.log("Aucun token présent, tentative de rafraîchissement...");
+                                return await refreshToken();
+                }
+                return token;
+}
+
+// 🔄 Mettre à jour l'affichage du profil
+function updateProfileUI(user) {
+                document.getElementById('userName').textContent = user.nom || 'Non renseigné';
+                document.getElementById('userFirstName').textContent = user.prenom || 'Non renseigné';
+                document.getElementById('userEmail').textContent = user.email || 'Non renseigné';
+                document.getElementById('userSport').textContent = user.sport || 'Non renseigné';
+                document.getElementById('userLevel').textContent = user.niveau || 'Non renseigné';
+}

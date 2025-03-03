@@ -8,5 +8,9 @@ router.get('/users', authenticator, isAdmin, userController.getAlluser);
 router.post('/register', userController.Register);
 router.post('/login', userController.Login);
 router.get('/profile', authenticator, userController.getProfile);
+router.put('/update', authenticator, userController.updateProfile);
+router.post('/refresh', userController.refreshToken);
+
 
 module.exports = router;
+

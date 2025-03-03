@@ -272,6 +272,83 @@
     }
 
     .signup:hover {
-        background: #ff4d2e;
+        background: #DC320F;
+    }
+}
+
+/* Suppression des anciens styles de hover pour reservation-link */
+/* Style du lien de réservation */
+.reservation-link {
+    color: black;
+    text-decoration: none;
+    padding: 20px;
+    font-size: 3rem;
+    /* Augmenter la taille ici */
+    display: block;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+
+.reservation-link:hover {
+    color: #DC320F;
+}
+
+/* Effet de soulignement */
+.reservation-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    background: #DC320F;
+    bottom: -11px;
+    /* Augmenter cette valeur pour éloigner davantage le trait */
+    left: 50%;
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+}
+
+
+.reservation-link:hover::after {
+    width: 80%;
+}
+
+/* Style Mobile (jusqu'à 767px) */
+@media (max-width: 767px) {
+    .reservation-link {
+        font-size: 1.5rem;
+        text-align: center;
+        width: 100%;
+        padding: 20px;
+    }
+
+    .reservation-link::after {
+        display: none;
+        /* Retrait de la ligne en mobile */
+    }
+}
+
+.logout-link {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    padding: 10px;
+    transition: color 0.3s ease;
+    background: none;
+    border: none;
+    font-family: inherit;
+    margin-left: 15px;
+}
+
+.logout-link:hover {
+    color: #DC320F;
+}
+
+@media (max-width: 767px) {
+    .logout-link {
+        font-size: 1.5rem;
+        width: 100%;
+        text-align: center;
     }
 }

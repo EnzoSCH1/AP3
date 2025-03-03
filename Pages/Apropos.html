@@ -6,28 +6,64 @@
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Document</title>
                 <link rel="stylesheet" href="../style_css/apropos.css">
-                <!-- <link rel="stylesheet" href="../style_css/ligue.css"> -->
+                <link rel="stylesheet" href="../style_css/ap.css">
+                <link rel="stylesheet" href="../style_css/footer.css">
                 <script src="../auth.js" defer></script>
+                <link rel="stylesheet" href="../style_css/footer.css">
+                <script src="../auth.js" defer></script>
+
 
 </head>
 
 <body>
-                <div id="header-placeholder"></div>
+                <header>
+                                <!-- Mobile Menu -->
+                                <div class="mobile-menu">
+                                                <div class="mobile-header">
+                                                                <div class="brand">
+                                                                                <img src="../image/M2L.jpg"
+                                                                                                alt="Logo M2L"
+                                                                                                class="mobile-logo">
+                                                                                <h1 class="mobile-title">M2L</h1>
+                                                                </div>
+                                                                <div class="img-menu">
+                                                                                <img src="../image/Image menu.png"
+                                                                                                alt="">
+                                                                </div>
+                                                </div>
+                                                <div class="menu-bar">
+                                                                <span class="menu-text">Menu</span>
+                                                                <button id="toggler">
+                                                                                <span class="material-icons">menu</span>
+                                                                </button>
+                                                </div>
+                                </div>
 
-                <script>
-                                fetch("ap2.html")
-                                                .then(response => response.text())
-                                                .then(data => {
-                                                                document.getElementById("header-placeholder").innerHTML = data;
-
-
-                                                                const script = document.createElement("script");
-                                                                script.src = "script.js";
-                                                                script.defer = true;
-                                                                document.body.appendChild(script);
-
-                                                });
-                </script>
+                                <!-- Desktop/Mobile Menu -->
+                                <div class="menu">
+                                                <div class="menu-container">
+                                                                <a href="/" class="logo">
+                                                                                <img src="../image/M2L.jpg"
+                                                                                                alt="Logo M2L">
+                                                                </a>
+                                                                <ul class="menu-listing">
+                                                                                <li><a href="../Pages/Apropos.html">A
+                                                                                                                propos</a>
+                                                                                </li>
+                                                                                <li><a href="../Pages/articles.html">Articles</a>
+                                                                                </li>
+                                                                                <li><a href="../Pages/contact.html">Contact</a>
+                                                                                </li>
+                                                                </ul>
+                                                                <div class="auth-buttons">
+                                                                                <!-- Les boutons seront manipulés via auth.js -->
+                                                                </div>
+                                                </div>
+                                                <div class="sport">
+                                                                <img src="../image/Image menu.png" alt="">
+                                                </div>
+                                </div>
+                </header>
 
                 <main class="apropos">
                                 <h1>A propos</h1>
@@ -60,7 +96,10 @@
                 </main>
 
                 <footer>
-
+                                <p>&copy; 2025 M2L - Tous droits réservés.</p>
+                                <p>
+                                                <a href="../Pages/contact.html">Contact</a>
+                                </p>
                 </footer>
 </body>
 

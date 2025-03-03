@@ -4,37 +4,56 @@
 <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Réserver un Espace</title>
+                <meta name="description" content="Formulaire de réservation d'espaces M2L">
+                <title>Réserver un Espace - M2L</title>
                 <link rel="stylesheet" href="../style_css/reserve.css">
-                <script src="../resrvations.js" defer></script>
+                <script src="../reservations.js" defer></script>
 </head>
 
 <body>
-
                 <header>
                                 <h1>Réserver un Espace</h1>
+                                <p id="spaceName">Chargement de l'espace...</p>
                 </header>
 
                 <section id="reservationForm">
                                 <h2>Formulaire de Réservation</h2>
 
-                                <!-- Formulaire de réservation -->
                                 <form id="formReservation">
-                                                <!-- Champ caché pour l'ID de l'espace -->
-                                                <input type="hidden" id="space_id" name="space_id" value="">
+                                                <input type="hidden" id="space_id" name="id_spaces" value="">
+                                                <input type="hidden" id="user_id" name="user_id" value="">
+                                                <input type="hidden" id="payment_id" name="payment_id" value="">
 
-                                                <label for="start_date">Date de début</label>
-                                                <input type="datetime-local" id="start_date" name="start_date" required>
+                                                <div class="form-group">
+                                                                <label for="start_date">Date de début *</label>
+                                                                <input type="datetime-local" id="start_date"
+                                                                                name="start_date" required>
+                                                                <div class="error-message" id="start_date_error"></div>
+                                                </div>
 
-                                                <label for="end_date">Date de fin</label>
-                                                <input type="datetime-local" id="end_date" name="end_date" required>
+                                                <div class="form-group">
+                                                                <label for="end_date">Date de fin *</label>
+                                                                <input type="datetime-local" id="end_date"
+                                                                                name="end_date" required>
+                                                                <div class="error-message" id="end_date_error"></div>
+                                                </div>
 
-                                                <label for="user_name">Nom</label>
-                                                <input type="text" id="user_name" name="user_name" required>
+                                                <div class="price-display">
+                                                                <h3>Résumé de la réservation</h3>
+                                                                <p>Prix par jour: <span id="pricePerDay">---</span> €
+                                                                </p>
+                                                                <p>Durée: <span id="duration">---</span></p>
+                                                                <p>Montant Total: <span id="totalAmount">---</span> €
+                                                                </p>
+                                                </div>
 
-                                                <button type="submit">Confirmer la réservation</button>
+                                                <input type="hidden" id="total_amount" name="total_amount" required>
+
+                                                <button type="submit" id="reserver" disabled>Créer la
+                                                                réservation</button>
                                 </form>
                 </section>
+
 
 </body>
 

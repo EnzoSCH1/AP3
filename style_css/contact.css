@@ -6,29 +6,29 @@ body {
 
 .contact {
                 background-color: white;
-                width: 90%;
+                width: 112.5%;
+                /* Augmenté de 25% */
                 margin: 0 auto;
+                margin-top: 8rem;
 }
 
 .contact .heading {
                 text-align: center;
-                /* Centre le texte */
-                margin-top: 2rem;
-                /* Marge au-dessus */
-                margin-bottom: 3rem;
-                /* Marge en dessous */
+                margin-top: 1.66rem;
+                /* Augmenté de 25% */
+                margin-bottom: 2.5rem;
+                /* Augmenté de 25% */
                 color: #DC320F;
-                /* Couleur orange */
 }
-
-
 
 .contact form {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 3rem;
-                margin: 5rem auto;
+                gap: 2.5rem;
+                /* Augmenté de 25% */
+                margin: 4.16rem auto;
+                /* Augmenté de 25% */
                 text-align: center;
 }
 
@@ -41,27 +41,37 @@ body {
 .contact form .input-box input,
 .contact form textarea {
                 width: 100%;
-                padding: 2.5rem;
-                font-size: 1.8rem;
+                padding: 2.08rem;
+                /* Augmenté de 25% */
+                font-size: 1.5rem;
+                /* Augmenté de 25% */
                 color: black;
                 background-color: white;
-                border-radius: 2rem;
-                border: 2px solid black;
-                margin: 1.5rem 0;
+                border-radius: 1.66rem;
+                /* Augmenté de 25% */
+                border: 1.66px solid black;
+                /* Augmenté de 25% */
+                margin: 1.25rem 0;
+                /* Augmenté de 25% */
                 resize: none;
 }
 
 .contact form .btn {
-                margin-top: 2rem;
+                margin-top: 1.66rem;
+                /* Augmenté de 25% */
 }
 
 .btn {
-                padding: 10px 20px;
-                font-size: 1.6rem;
+                padding: 8.33px 16.66px;
+                /* Augmenté de 25% */
+                font-size: 1.33rem;
+                /* Augmenté de 25% */
                 background-color: white;
                 color: #DC320F;
-                border: 2px solid #DC320F;
-                border-radius: 1.5rem;
+                border: 1.66px solid #DC320F;
+                /* Augmenté de 25% */
+                border-radius: 1.25rem;
+                /* Augmenté de 25% */
                 cursor: pointer;
 }
 
@@ -75,7 +85,8 @@ body {
 @media (max-width: 767px) {
                 .contact form {
                                 flex-direction: column;
-                                gap: 2rem;
+                                gap: 1.66rem;
+                                /* Augmenté de 25% */
                 }
 
                 .contact form .input-box {
@@ -87,13 +98,17 @@ body {
                 .contact form .input-box input,
                 .contact form textarea {
                                 width: 100%;
-                                padding: 1.5rem;
-                                font-size: 1.6rem;
+                                padding: 1.25rem;
+                                /* Augmenté de 25% */
+                                font-size: 1.33rem;
+                                /* Augmenté de 25% */
                 }
 
                 .btn {
-                                font-size: 1.4rem;
-                                padding: 10px 20px;
+                                font-size: 1.16rem;
+                                /* Augmenté de 25% */
+                                padding: 8.33px 16.66px;
+                                /* Augmenté de 25% */
                 }
 }
 
@@ -103,8 +118,10 @@ body {
                                 flex-direction: row;
                                 align-items: center;
                                 justify-content: center;
-                                gap: 3rem;
-                                margin: 5rem auto;
+                                gap: 2.5rem;
+                                /* Augmenté de 25% */
+                                margin: 4.16rem auto;
+                                /* Augmenté de 25% */
                                 text-align: center;
                 }
 
@@ -117,15 +134,18 @@ body {
                 .contact form .input-box input,
                 .contact form textarea {
                                 width: 100%;
-                                padding: 2.5rem;
-                                font-size: 1.8rem;
+                                padding: 2.08rem;
+                                /* Augmenté de 25% */
+                                font-size: 1.5rem;
+                                /* Augmenté de 25% */
                 }
 }
 
 /* Desktop version (à partir de 1025px) */
 @media (min-width: 1025px) {
                 .contact {
-                                width: 80%;
+                                width: 100%;
+                                /* Augmenté de 25% */
                 }
 
                 .contact form {
@@ -133,8 +153,10 @@ body {
                                 flex-direction: row;
                                 align-items: center;
                                 justify-content: center;
-                                gap: 3rem;
-                                margin: 5rem auto;
+                                gap: 2.5rem;
+                                /* Augmenté de 25% */
+                                margin: 4.16rem auto;
+                                /* Augmenté de 25% */
                                 text-align: center;
                 }
 
@@ -147,7 +169,9 @@ body {
                 .contact form .input-box input,
                 .contact form textarea {
                                 width: 100%;
-                                padding: 2.5rem;
-                                font-size: 1.8rem;
+                                padding: 2.08rem;
+                                /* Augmenté de 25% */
+                                font-size: 1.5rem;
+                                /* Augmenté de 25% */
                 }
 }

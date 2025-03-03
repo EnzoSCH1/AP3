@@ -1,48 +1,63 @@
 const jwt = require('jsonwebtoken');
-const { pool } = require('../database'); // Assurez-vous du bon chemin d'import
-const dotenv = require('dotenv');
-dotenv.config();
+const pool = require('../database');
 
 async function authenticator(req, res, next) {
-                const token = req.headers['authorization']?.split(' ')[1];
-
-                if (!token) {
-                                return res.status(401).json({ error: 'Token manquant' });
-                }
-
                 try {
+                                const authHeader = req.headers.authorization;
+
+                                // Vérifier si le header Authorization est bien présent
+                                if (!authHeader || !authHeader.startsWith('Bearer ')) {
+                                                console.error('❌ Token manquant ou mal formaté.');
+                                                return res.status(401).json({ error: 'Token manquant ou invalide' });
+                                }
+
+                                const token = authHeader.split(' ')[1]; // Récupération du token après "Bearer "
+                                console.log('✅ Token reçu:', token);
+
                                 // Vérifier et décoder le token
                                 const decoded = jwt.verify(token, process.env.JWT_SECRET);
+                                console.log('✅ Token décodé:', decoded);
 
-                                // Utiliser une connexion du pool pour la requête
-                                const connection = await pool.getConnection();
+                                if (!decoded || !decoded.id_user) {
+                                                console.error('❌ Token invalide.');
+                                                return res.status(401).json({ error: 'Token invalide' });
+                                }
 
+                                // Connexion à la base de données
+                                const conn = await pool.getConnection();
                                 try {
-                                                // Récupérer l'utilisateur
-                                                const [result] = await connection.query('SELECT * FROM users WHERE email = ?', [decoded.email]);
+                                                console.log(`🔍 Vérification de l'utilisateur ID: ${decoded.id_user}`);
 
-                                                if (result.length === 0) {
+                                                // Vérifier si l'utilisateur existe
+                                                const [rows] = await conn.query('SELECT * FROM user WHERE id_user = ?', [decoded.id_user]);
+                                                conn.release(); // Libérer la connexion après la requête
+
+                                                console.log('✅ Résultat de la requête:', rows);
+
+                                                if (!rows || rows.length === 0) {
+                                                                console.error('❌ Utilisateur non trouvé.');
                                                                 return res.status(404).json({ error: 'Utilisateur non trouvé' });
                                                 }
 
-                                                // Ajouter l'utilisateur à la requête
-                                                req.user = result[0];
+                                                // Stocker l'utilisateur dans `req.user` pour l'utiliser dans les routes suivantes
+                                                req.user = rows[0];
+                                                console.log('✅ Utilisateur authentifié:', req.user);
 
-                                                // Passer à la prochaine fonction du middleware
-                                                next();
-                                } finally {
-                                                // Toujours libérer la connexion
-                                                connection.release();
+                                                next(); // Passer à la prochaine fonction middleware ou route
+                                } catch (err) {
+                                                console.error('❌ Erreur lors de la requête SQL:', err);
+                                                return res.status(500).json({ error: 'Erreur interne du serveur' });
                                 }
                 } catch (err) {
-                                console.error('Erreur lors de la vérification du token:', err);
+                                console.error('❌ Erreur lors de la vérification du token:', err);
 
-                                // Gérer différents types d'erreurs JWT
                                 if (err.name === 'TokenExpiredError') {
-                                                return res.status(401).json({ error: 'Token expiré' });
+                                                console.warn('🔄 Token expiré, tentative de rafraîchissement...');
+                                                return res.status(401).json({ error: 'Token expiré', refresh: true });
                                 }
 
-                                res.status(401).json({ error: 'Token invalide' });
+
+                                return res.status(401).json({ error: 'Token invalide' });
                 }
 }
 

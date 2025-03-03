@@ -2,8 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const userRoute = require('./Routes/userRoute');
-const reservationRoutes = require('./Routes/reservationRoute');
-const invoiceRoute = require('./Routes/invoiceRoute');
+const reservationRoute = require('./Routes/reservationRoute');
+
+
 
 
 dotenv.config();
@@ -12,17 +13,20 @@ const app = express(); // Déclaration de l'instance 'app' avant de l'utiliser
 
 // Middleware
 const corsOptions = {
-                origin: ['http://127.0.0.1:5500', 'http://localhost:5500'], // Autoriser les deux origines
-                methods: ['GET', 'POST', 'PUT', 'DELETE'], // Méthodes HTTP autorisées
-                credentials: true // Si vous utilisez des cookies ou des sessions
+                origin: ['http://127.0.0.1:5501', 'http://localhost:5500'], // Autoriser ces origines
+                methods: ['GET', 'POST', 'PUT', 'DELETE'], // Autoriser ces méthodes
+                credentials: true // Autoriser l'envoi de cookies/sessions
 };
+
 app.use(cors(corsOptions));
+
 app.use(express.json());
 
 // Routes
-app.use('/user', userRoute); // Route pour les utilisateurs, comme /user/register
-app.use('/reservations', reservationRoutes); // Route pour les réservations, comme /reservations
-app.use('/invoices', invoiceRoute);
+app.use('/user', userRoute);
+app.use('/reservations', reservationRoute);
+
+
 
 
 // Lancer le serveur

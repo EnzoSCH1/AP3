@@ -75,24 +75,10 @@ exports.Login = async (req, res) => {
                 try {
                                 const { email, password } = req.body;
 
-                                // Log détaillé
-                                console.log('Tentative de connexion:', { email, password });
-
                                 conn = await pool.getConnection();
 
-                                // Recherche de l'utilisateur avec plus de logs
                                 const result = await conn.query('SELECT * FROM user WHERE email = ?', [email]);
-                                console.log('Résultats de recherche utilisateur:', {
-                                                resultCount: result.length,
-                                                userFound: result.length > 0 ? {
-                                                                id: result[0].id_user,
-                                                                email: result[0].email,
-                                                                // Masquez le mot de passe pour la sécurité
-                                                                passwordHash: result[0].password ? '[HASH PRÉSENT]' : '[PAS DE HASH]'
-                                                } : null
-                                });
 
-                                // Vérification de l'existence de l'utilisateur
                                 if (result.length === 0) {
                                                 console.log(`Aucun utilisateur trouvé avec l'email: ${email}`);
                                                 return res.status(400).json({ error: 'Identifiants incorrects' });
@@ -100,43 +86,33 @@ exports.Login = async (req, res) => {
 
                                 const user = result[0];
 
-                                // Vérification du mot de passe avec plus de détails
-                                try {
-                                                const isPasswordValid = await bcrypt.compare(password, user.password);
-                                                console.log('Résultat de la vérification du mot de passe:', {
-                                                                isPasswordValid,
-                                                                inputPassword: password,
-                                                                storedHashLength: user.password ? user.password.length : 'Pas de hash'
-                                                });
-
-                                                if (!isPasswordValid) {
-                                                                console.log('Mot de passe incorrect pour l\'utilisateur:', email);
-                                                                return res.status(400).json({ error: 'Identifiants incorrects' });
-                                                }
-
-                                                // Génération du token et réponse
-                                                const token = jwt.sign(
-                                                                { id_user: user.id_user, email: user.email },
-                                                                process.env.JWT_SECRET,
-                                                                { expiresIn: '1h' }
-                                                );
-
-                                                res.json({
-                                                                token,
-                                                                message: 'Connexion réussie',
-                                                                user: {
-                                                                                id: user.id_user,
-                                                                                email: user.email
-                                                                }
-                                                });
-
-                                } catch (bcryptError) {
-                                                console.error("Erreur lors de la vérification du mot de passe:", bcryptError);
-                                                return res.status(500).json({
-                                                                error: "Erreur lors de la vérification des identifiants",
-                                                                details: process.env.NODE_ENV === 'development' ? bcryptError.message : null
-                                                });
+                                const isPasswordValid = await bcrypt.compare(password, user.password);
+                                if (!isPasswordValid) {
+                                                console.log('Mot de passe incorrect pour l\'utilisateur:', email);
+                                                return res.status(400).json({ error: 'Identifiants incorrects' });
                                 }
+
+                                const token = jwt.sign(
+                                                { id_user: user.id_user, email: user.email },
+                                                process.env.JWT_SECRET,
+                                                { expiresIn: '1h' }
+                                );
+
+                                const refreshToken = jwt.sign(
+                                                { id_user: user.id_user },
+                                                process.env.JWT_SECRET,
+                                                { expiresIn: '7d' }
+                                );
+
+                                // Réponse
+                                res.status(200).json({
+                                                message: 'Connexion réussie',
+                                                token,
+                                                refreshToken,
+                                                user: { id_user: user.id_user, nom: user.nom, email: user.email }
+                                });
+
+
 
                 } catch (error) {
                                 console.error('Erreur générale de connexion:', error);
@@ -148,23 +124,153 @@ exports.Login = async (req, res) => {
                                 if (conn) conn.release();
                 }
 };
-
-// Autres méthodes du contrôleur (inscription, etc.) à ajouter ici
 exports.getProfile = async (req, res) => {
+                let conn;
                 try {
-                                const conn = await pool.getConnection();
-                                const query = 'SELECT username, email FROM user WHERE email = ?';
-                                const results = await conn.query(query, [req.user.email]);
-                                conn.release();
+                                conn = await pool.getConnection();
+                                // On récupère uniquement les informations d'inscription
+                                const query = 'SELECT id_user, nom, prenom, email FROM user WHERE id_user = ?';
+                                const results = await conn.query(query, [req.user.id_user]);
 
                                 if (results.length > 0) {
-                                                res.status(200).json(results[0]);
+                                                res.status(200).json({
+                                                                message: 'Profil récupéré avec succès',
+                                                                user: {
+                                                                                ...results[0],
+                                                                                sport: null,    // On ajoute ces champs avec null pour que le frontend 
+                                                                                niveau: null    // sache qu'ils doivent être complétés
+                                                                }
+                                                });
                                 } else {
                                                 res.status(404).json({ error: 'Utilisateur non trouvé.' });
                                 }
                 } catch (error) {
-                                console.error(error);
+                                console.error('Erreur lors de la récupération du profil:', error);
                                 res.status(500).json({ error: 'Erreur lors de la récupération du profil.' });
+                } finally {
+                                if (conn) conn.release();
+                }
+};
+
+
+
+
+
+exports.updateProfile = async (req, res) => {
+                let conn;
+                try {
+                                console.log('Requête reçue - req.user:', req.user); // ✅ Vérification
+
+                                if (!req.user || !req.user.id_user) {
+                                                return res.status(401).json({ error: 'Utilisateur non authentifié.' });
+                                }
+
+                                const { nom, prenom, email, password, sport, niveau } = req.body;
+                                const userId = req.user.id_user; // Récupéré du token JWT
+
+                                conn = await pool.getConnection();
+
+                                // Vérifier si l'utilisateur existe
+                                const [userCheck] = await conn.query('SELECT * FROM user WHERE id_user = ?', [userId]);
+                                if (!userCheck || userCheck.length === 0) {
+                                                return res.status(404).json({ error: 'Utilisateur non trouvé.' });
+                                }
+
+                                let updateQuery = 'UPDATE user SET ';
+                                const updateValues = [];
+                                const updateFields = [];
+
+                                if (nom) {
+                                                updateFields.push('nom = ?');
+                                                updateValues.push(nom);
+                                }
+                                if (prenom) {
+                                                updateFields.push('prenom = ?');
+                                                updateValues.push(prenom);
+                                }
+                                if (email) {
+                                                // Vérifier si l'email est déjà utilisé par un autre utilisateur
+                                                const [emailCheck] = await conn.query(
+                                                                'SELECT id_user FROM user WHERE email = ? AND id_user != ?',
+                                                                [email, userId]
+                                                );
+                                                if (emailCheck.length > 0) {
+                                                                return res.status(400).json({ error: 'Cet email est déjà utilisé par un autre utilisateur.' });
+                                                }
+                                                updateFields.push('email = ?');
+                                                updateValues.push(email);
+                                }
+                                if (sport) {
+                                                updateFields.push('sport = ?');
+                                                updateValues.push(sport);
+                                }
+                                if (niveau) {
+                                                updateFields.push('niveau = ?');
+                                                updateValues.push(niveau);
+                                }
+                                if (password) {
+                                                const hashedPassword = await bcrypt.hash(password, 10);
+                                                updateFields.push('password = ?');
+                                                updateValues.push(hashedPassword);
+                                }
+
+                                // Si aucun champ à mettre à jour
+                                if (updateFields.length === 0) {
+                                                return res.status(400).json({ error: 'Aucune donnée à mettre à jour.' });
+                                }
+
+                                // Compléter la requête SQL
+                                updateQuery += updateFields.join(', ');
+                                updateQuery += ' WHERE id_user = ?';
+                                updateValues.push(userId);
+
+                                // Exécuter la mise à jour
+                                await conn.query(updateQuery, updateValues);
+
+                                // Récupérer les informations mises à jour
+                                const [updatedUser] = await conn.query(
+                                                'SELECT id_user, nom, prenom, email, sport, niveau FROM user WHERE id_user = ?',
+                                                [userId]
+                                );
+
+                                if (!updatedUser || updatedUser.length === 0) {
+                                                return res.status(404).json({ error: 'Utilisateur non trouvé après mise à jour.' });
+                                }
+
+                                res.status(200).json({
+                                                message: 'Profil mis à jour avec succès',
+                                                user: updatedUser[0]
+                                });
+
+                } catch (error) {
+                                console.error('Erreur lors de la mise à jour du profil:', error);
+                                res.status(500).json({
+                                                error: 'Erreur lors de la mise à jour du profil',
+                                                details: process.env.NODE_ENV === 'development' ? error.message : null
+                                });
+                } finally {
+                                if (conn) conn.release();
+                }
+};
+
+exports.refreshToken = (req, res) => {
+                const { refreshToken } = req.body;
+
+                if (!refreshToken) {
+                                return res.status(401).json({ error: 'Refresh token manquant' });
+                }
+
+                try {
+                                const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+                                const newToken = jwt.sign(
+                                                { id_user: decoded.id_user },
+                                                process.env.JWT_SECRET,
+                                                { expiresIn: '1h' }
+                                );
+
+                                res.json({ token: newToken });
+                } catch (error) {
+                                return res.status(403).json({ error: 'Refresh token invalide ou expiré' });
                 }
 };
 
