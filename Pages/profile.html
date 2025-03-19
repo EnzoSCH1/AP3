@@ -7,7 +7,6 @@
                 <title>Profil</title>
                 <link rel="stylesheet" href="../style_css/profile.css">
                 <script src="../profil.js"></script>
-
 </head>
 
 <body>
@@ -34,46 +33,48 @@
                                                                 <label>Niveau</label>
                                                                 <span id="userLevel"></span>
                                                 </div>
-                                                <button onclick="openEditForm()" class="edit-btn">Modifier le
+                                                <button onclick="openEditForm()" class="edit-btn">Compléter le
                                                                 profil</button>
                                                 <button id="logout-button" class="logout-btn">Déconnexion</button>
                                 </div>
                 </div>
 
-                <!-- Overlay pour le formulaire d'édition -->
+                <!-- Overlay pour le formulaire de complétion -->
                 <div class="overlay" id="overlay" style="display: none;" onclick="closeEditForm()"></div>
 
-                <!-- Formulaire d'édition -->
+                <!-- Formulaire de complétion -->
                 <div class="edit-form" id="editForm" style="display: none;">
-                                <h2>Modifier le Profil</h2>
+                                <h2>Compléter le Profil</h2>
                                 <form id="profileEditForm" onsubmit="saveProfile(event)">
+                                                <!-- Informations personnelles en lecture seule -->
                                                 <div class="form-group">
                                                                 <label for="editNom">Nom</label>
                                                                 <input type="text" id="editNom" placeholder="Votre nom"
-                                                                                required>
+                                                                                readonly>
                                                 </div>
 
                                                 <div class="form-group">
                                                                 <label for="editPrenom">Prénom</label>
                                                                 <input type="text" id="editPrenom"
-                                                                                placeholder="Votre prénom" required>
+                                                                                placeholder="Votre prénom" readonly>
                                                 </div>
 
                                                 <div class="form-group">
                                                                 <label for="editEmail">Email</label>
                                                                 <input type="email" id="editEmail"
-                                                                                placeholder="Votre email" required>
+                                                                                placeholder="Votre email" readonly>
                                                 </div>
 
+                                                <!-- Informations à compléter -->
                                                 <div class="form-group">
                                                                 <label for="editSport">Sport pratiqué</label>
                                                                 <input type="text" id="editSport"
-                                                                                placeholder="Votre sport">
+                                                                                placeholder="Votre sport" required>
                                                 </div>
 
                                                 <div class="form-group">
                                                                 <label for="editLevel">Niveau</label>
-                                                                <select id="editLevel">
+                                                                <select id="editLevel" required>
                                                                                 <option value="">Sélectionnez votre
                                                                                                 niveau</option>
                                                                                 <option value="Débutant">Débutant
@@ -85,13 +86,6 @@
                                                                 </select>
                                                 </div>
 
-                                                <div class="form-group">
-                                                                <label for="editPassword">Nouveau mot de passe
-                                                                                (optionnel)</label>
-                                                                <input type="password" id="editPassword"
-                                                                                placeholder="Laissez vide pour ne pas changer">
-                                                </div>
-
                                                 <div class="form-buttons">
                                                                 <button type="submit"
                                                                                 class="save-btn">Enregistrer</button>
@@ -100,8 +94,6 @@
                                                 </div>
                                 </form>
                 </div>
-
-
 </body>
 
 </html>

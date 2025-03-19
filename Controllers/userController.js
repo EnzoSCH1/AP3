@@ -128,18 +128,14 @@ exports.getProfile = async (req, res) => {
                 let conn;
                 try {
                                 conn = await pool.getConnection();
-                                // On récupère uniquement les informations d'inscription
-                                const query = 'SELECT id_user, nom, prenom, email FROM user WHERE id_user = ?';
+                                // On récupère les informations d'inscription incluant le prénom
+                                const query = 'SELECT id_user, nom, prenom, email, FROM user WHERE id_user = ?';
                                 const results = await conn.query(query, [req.user.id_user]);
 
                                 if (results.length > 0) {
                                                 res.status(200).json({
                                                                 message: 'Profil récupéré avec succès',
-                                                                user: {
-                                                                                ...results[0],
-                                                                                sport: null,    // On ajoute ces champs avec null pour que le frontend 
-                                                                                niveau: null    // sache qu'ils doivent être complétés
-                                                                }
+                                                                user: results[0]
                                                 });
                                 } else {
                                                 res.status(404).json({ error: 'Utilisateur non trouvé.' });
@@ -152,11 +148,8 @@ exports.getProfile = async (req, res) => {
                 }
 };
 
-
-
-
-
-exports.updateProfile = async (req, res) => {
+// Fonction pour compléter le profil (uniquement sport et niveau)
+exports.complementProfile = async (req, res) => {
                 let conn;
                 try {
                                 console.log('Requête reçue - req.user:', req.user); // ✅ Vérification
@@ -165,7 +158,7 @@ exports.updateProfile = async (req, res) => {
                                                 return res.status(401).json({ error: 'Utilisateur non authentifié.' });
                                 }
 
-                                const { nom, prenom, email, password, sport, niveau } = req.body;
+                                const { sport, niveau } = req.body;
                                 const userId = req.user.id_user; // Récupéré du token JWT
 
                                 conn = await pool.getConnection();
@@ -176,47 +169,24 @@ exports.updateProfile = async (req, res) => {
                                                 return res.status(404).json({ error: 'Utilisateur non trouvé.' });
                                 }
 
+                                // Vérifier si au moins un champ est fourni
+                                if (!sport && !niveau) {
+                                                return res.status(400).json({ error: 'Veuillez fournir au moins le sport ou le niveau.' });
+                                }
+
+                                // Préparer la requête de mise à jour
                                 let updateQuery = 'UPDATE user SET ';
                                 const updateValues = [];
                                 const updateFields = [];
 
-                                if (nom) {
-                                                updateFields.push('nom = ?');
-                                                updateValues.push(nom);
-                                }
-                                if (prenom) {
-                                                updateFields.push('prenom = ?');
-                                                updateValues.push(prenom);
-                                }
-                                if (email) {
-                                                // Vérifier si l'email est déjà utilisé par un autre utilisateur
-                                                const [emailCheck] = await conn.query(
-                                                                'SELECT id_user FROM user WHERE email = ? AND id_user != ?',
-                                                                [email, userId]
-                                                );
-                                                if (emailCheck.length > 0) {
-                                                                return res.status(400).json({ error: 'Cet email est déjà utilisé par un autre utilisateur.' });
-                                                }
-                                                updateFields.push('email = ?');
-                                                updateValues.push(email);
-                                }
                                 if (sport) {
                                                 updateFields.push('sport = ?');
                                                 updateValues.push(sport);
                                 }
+
                                 if (niveau) {
                                                 updateFields.push('niveau = ?');
                                                 updateValues.push(niveau);
-                                }
-                                if (password) {
-                                                const hashedPassword = await bcrypt.hash(password, 10);
-                                                updateFields.push('password = ?');
-                                                updateValues.push(hashedPassword);
-                                }
-
-                                // Si aucun champ à mettre à jour
-                                if (updateFields.length === 0) {
-                                                return res.status(400).json({ error: 'Aucune donnée à mettre à jour.' });
                                 }
 
                                 // Compléter la requête SQL
@@ -230,6 +200,100 @@ exports.updateProfile = async (req, res) => {
                                 // Récupérer les informations mises à jour
                                 const [updatedUser] = await conn.query(
                                                 'SELECT id_user, nom, prenom, email, sport, niveau FROM user WHERE id_user = ?',
+                                                [userId]
+                                );
+
+                                if (!updatedUser || updatedUser.length === 0) {
+                                                return res.status(404).json({ error: 'Utilisateur non trouvé après mise à jour.' });
+                                }
+
+                                res.status(200).json({
+                                                message: 'Profil complété avec succès',
+                                                user: updatedUser[0]
+                                });
+
+                } catch (error) {
+                                console.error('Erreur lors du complément du profil:', error);
+                                res.status(500).json({
+                                                error: 'Erreur lors du complément du profil',
+                                                details: process.env.NODE_ENV === 'development' ? error.message : null
+                                });
+                } finally {
+                                if (conn) conn.release();
+                }
+};
+
+// La fonction de rafraîchissement de token reste inchangée
+exports.refreshToken = (req, res) => {
+                const { refreshToken } = req.body;
+
+                if (!refreshToken) {
+                                return res.status(401).json({ error: 'Refresh token manquant' });
+                }
+
+                try {
+                                const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+                                const newToken = jwt.sign(
+                                                { id_user: decoded.id_user },
+                                                process.env.JWT_SECRET,
+                                                { expiresIn: '1h' }
+                                );
+
+                                res.json({ token: newToken });
+                } catch (error) {
+                                return res.status(403).json({ error: 'Refresh token invalide ou expiré' });
+                }
+};
+
+exports.updateProfile = async (req, res) => {
+                let conn;
+                try {
+                                const { nom, prenom, email } = req.body;
+                                const userId = req.user.id_user; // Récupéré du token JWT
+
+                                if (!nom && !prenom && !email) {
+                                                return res.status(400).json({ error: 'Veuillez fournir au moins un champ à mettre à jour.' });
+                                }
+
+                                conn = await pool.getConnection();
+
+                                // Vérifier si l'utilisateur existe
+                                const [userCheck] = await conn.query('SELECT * FROM user WHERE id_user = ?', [userId]);
+                                if (!userCheck || userCheck.length === 0) {
+                                                return res.status(404).json({ error: 'Utilisateur non trouvé.' });
+                                }
+
+                                // Préparer la requête de mise à jour
+                                let updateQuery = 'UPDATE user SET ';
+                                const updateValues = [];
+                                const updateFields = [];
+
+                                if (nom) {
+                                                updateFields.push('nom = ?');
+                                                updateValues.push(nom);
+                                }
+
+                                if (prenom) {
+                                                updateFields.push('prenom = ?');
+                                                updateValues.push(prenom);
+                                }
+
+                                if (email) {
+                                                updateFields.push('email = ?');
+                                                updateValues.push(email);
+                                }
+
+                                // Compléter la requête SQL
+                                updateQuery += updateFields.join(', ');
+                                updateQuery += ' WHERE id_user = ?';
+                                updateValues.push(userId);
+
+                                // Exécuter la mise à jour
+                                await conn.query(updateQuery, updateValues);
+
+                                // Récupérer les informations mises à jour
+                                const [updatedUser] = await conn.query(
+                                                'SELECT id_user, nom, prenom, email FROM user WHERE id_user = ?',
                                                 [userId]
                                 );
 
@@ -252,25 +316,3 @@ exports.updateProfile = async (req, res) => {
                                 if (conn) conn.release();
                 }
 };
-
-exports.refreshToken = (req, res) => {
-                const { refreshToken } = req.body;
-
-                if (!refreshToken) {
-                                return res.status(401).json({ error: 'Refresh token manquant' });
-                }
-
-                try {
-                                const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-                                const newToken = jwt.sign(
-                                                { id_user: decoded.id_user },
-                                                process.env.JWT_SECRET,
-                                                { expiresIn: '1h' }
-                                );
-
-                                res.json({ token: newToken });
-                } catch (error) {
-                                return res.status(403).json({ error: 'Refresh token invalide ou expiré' });
-                }
-};
-

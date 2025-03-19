@@ -2,20 +2,31 @@ body {
 
                 margin: 0;
                 padding: 0;
+
 }
+
+.apropos {
+                margin-top: 160px !important;
+                display: block !important;
+}
+
+
+
 
 .apropos,
 .ligue-container {
-                max-width: 1000px;
+
+                max-width: 1700px;
                 margin: 0 auto;
                 /* Centrage horizontal */
                 padding: 0 1rem;
+
                 /* Ajout de padding pour les petits écrans */
                 text-align: left;
 }
 
 h1 {
-                font-size: 2rem;
+                font-size: 3rem;
                 margin-bottom: 1.5rem;
                 /* Uniformisation avec la section ligue */
 }
@@ -43,6 +54,7 @@ p {
                 .apropos,
                 .ligue-container {
                                 margin: 1.5rem 1rem;
+
                                 /* Ajustement de la marge pour les petits écrans */
                 }
 

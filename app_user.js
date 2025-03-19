@@ -18,7 +18,7 @@ function togglePasswordVisibility() {
 document.addEventListener('DOMContentLoaded', function () {
                 const registerForm = document.getElementById('registerForm');
                 if (registerForm) {
-                                registerForm.addEventListener('submit', function (event) {
+                                registerForm.addEventListener('submit', async function (event) {
                                                 event.preventDefault();
 
                                                 const nom = document.getElementById('nom').value.trim();
@@ -30,19 +30,22 @@ document.addEventListener('DOMContentLoaded', function () {
                                                                 return;
                                                 }
 
-                                                fetch('http://localhost:3000/user/register', {
-                                                                method: 'POST',
-                                                                headers: { 'Content-Type': 'application/json' },
-                                                                body: JSON.stringify({ nom, prenom, email, password: mdp })
-                                                })
-                                                                .then(response => response.ok ? response.json() : Promise.reject('Erreur d\'inscription'))
-                                                                .then(() => {
-                                                                                alert('Inscription réussie!');
-                                                                                window.location.href = 'connexion.html';
-                                                                })
-                                                                .catch(error => {
-                                                                                alert(error);
+                                                try {
+                                                                const response = await fetch('http://localhost:3000/user/register', {
+                                                                                method: 'POST',
+                                                                                headers: { 'Content-Type': 'application/json' },
+                                                                                body: JSON.stringify({ nom, prenom, email, password: mdp })
                                                                 });
+
+                                                                if (response.ok) {
+                                                                                alert('✅ Inscription réussie !');
+                                                                                window.location.href = 'connexion.html';
+                                                                } else {
+                                                                                alert('❌ Erreur d\'inscription');
+                                                                }
+                                                } catch (error) {
+                                                                alert('❌ Erreur de connexion au serveur');
+                                                }
                                 });
                 }
 
@@ -68,14 +71,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
                                                                 if (response.ok) {
                                                                                 const data = await response.json();
+                                                                                console.log("🔑 Réponse du serveur :", data);
+
+                                                                                // ✅ Stocker correctement l'ID utilisateur et le token
+                                                                                localStorage.setItem('user_id', data.user.id_user); // Correction ici
                                                                                 localStorage.setItem('token', data.token);
-                                                                                localStorage.setItem('user', JSON.stringify(data.user));
+
+                                                                                alert("✅ Connexion réussie !");
                                                                                 window.location.href = 'ap2.html';
                                                                 } else {
-                                                                                showError('Erreur de connexion');
+                                                                                showError('❌ Erreur de connexion');
                                                                 }
                                                 } catch (error) {
-                                                                showError('Erreur de connexion au serveur');
+                                                                showError('❌ Erreur de connexion au serveur');
                                                 }
                                 });
                 }
@@ -84,16 +92,16 @@ document.addEventListener('DOMContentLoaded', function () {
 // Fonction de validation de l'inscription
 function validateForm(nom, prenom, email, mdp) {
                 if (!nom || !prenom) {
-                                alert('Nom et prénom sont requis');
+                                alert('❌ Nom et prénom sont requis');
                                 return false;
                 }
                 const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 if (!emailRegex.test(email)) {
-                                alert('Adresse email invalide');
+                                alert('❌ Adresse email invalide');
                                 return false;
                 }
                 if (!mdp) {
-                                alert('Mot de passe requis');
+                                alert('❌ Mot de passe requis');
                                 return false;
                 }
                 return true;
@@ -103,11 +111,11 @@ function validateForm(nom, prenom, email, mdp) {
 function validateLogin(email, mdp) {
                 const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 if (!email || !emailRegex.test(email)) {
-                                showError('Email invalide');
+                                showError('❌ Email invalide');
                                 return false;
                 }
                 if (!mdp) {
-                                showError('Mot de passe requis');
+                                showError('❌ Mot de passe requis');
                                 return false;
                 }
                 return true;
@@ -130,4 +138,3 @@ function createErrorDiv() {
                 loginForm.appendChild(errorDiv);
                 return errorDiv;
 }
-

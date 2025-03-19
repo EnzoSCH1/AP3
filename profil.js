@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 // Affichage des informations utilisateur
                 updateProfileUI(user);
 
-                // Ouvrir le formulaire d'édition
+                // Ouvrir le formulaire de complétion de profil
                 window.openEditForm = function () {
                                 document.getElementById('editForm').style.display = 'block';
                                 document.getElementById('overlay').style.display = 'block';
@@ -29,51 +29,44 @@ document.addEventListener('DOMContentLoaded', async function () {
                                 document.getElementById('editLevel').value = user.niveau || '';
                 };
 
-                // Fermer le formulaire d'édition
+                // Fermer le formulaire de complétion
                 window.closeEditForm = function () {
                                 document.getElementById('editForm').style.display = 'none';
                                 document.getElementById('overlay').style.display = 'none';
                 };
 
-                // Sauvegarder les modifications du profil
+                // Sauvegarder les informations complémentaires du profil
                 window.saveProfile = async function (event) {
                                 event.preventDefault();
 
-                                const updatedUser = {
-                                                nom: document.getElementById('editNom').value.trim(),
-                                                prenom: document.getElementById('editPrenom').value.trim(),
-                                                email: document.getElementById('editEmail').value.trim(),
+                                const complementUser = {
+                                                // On ne modifie pas les informations existantes, on complète uniquement
                                                 sport: document.getElementById('editSport').value.trim(),
                                                 niveau: document.getElementById('editLevel').value.trim(),
                                 };
-
-                                const newPassword = document.getElementById('editPassword').value.trim();
 
                                 try {
                                                 // Vérifier si le token est valide avant d'envoyer la requête
                                                 token = await ensureTokenValid(token);
                                                 if (!token) return;
 
-                                                console.log("Données envoyées :", { ...updatedUser, password: newPassword || undefined });
+                                                console.log("Données envoyées :", complementUser);
                                                 console.log("Token envoyé :", token);
 
-                                                const response = await fetch('http://localhost:3000/user/update', {
+                                                const response = await fetch('http://localhost:3000/user/complement', {
                                                                 method: 'PUT',
                                                                 headers: {
                                                                                 'Content-Type': 'application/json',
                                                                                 Authorization: `Bearer ${token}`,
                                                                 },
-                                                                body: JSON.stringify({
-                                                                                ...updatedUser,
-                                                                                password: newPassword || undefined, // Envoie seulement si un mot de passe est renseigné
-                                                                }),
+                                                                body: JSON.stringify(complementUser),
                                                 });
 
                                                 const data = await response.json();
                                                 console.log("Réponse serveur :", data);
 
                                                 if (!response.ok) {
-                                                                throw new Error(data.error || 'Erreur lors de la mise à jour du profil.');
+                                                                throw new Error(data.error || 'Erreur lors du complément du profil.');
                                                 }
 
                                                 // Mise à jour du profil dans localStorage
@@ -83,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                                                 // Mise à jour de l'affichage
                                                 updateProfileUI(user);
 
-                                                alert('Profil mis à jour avec succès !');
+                                                alert('Profil complété avec succès !');
                                                 closeEditForm();
 
                                 } catch (error) {
