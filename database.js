@@ -1,19 +1,13 @@
-const mariadb = require('mariadb');
-require('dotenv').config();
+// database.js
+const mysql = require('mysql2/promise');
 
-const pool = mariadb.createPool({
-                host: process.env.DB_HOST || 'localhost',
-                user: process.env.DB_USER || 'root',
-                password: process.env.DB_PASSWORD || '',
-                database: process.env.DB_NAME || 'm2l',
-                connectionLimit: 5
-});
-
-// Log de débogage
-console.log('Configuration de connexion :', {
-                host: process.env.DB_HOST || 'localhost',
-                user: process.env.DB_USER || 'root',
-                database: process.env.DB_NAME || 'm2l'
+const pool = mysql.createPool({
+                host: 'localhost',
+                user: 'root',
+                database: 'm2l',
+                waitForConnections: true,
+                connectionLimit: 10,
+                queueLimit: 0
 });
 
 module.exports = pool;

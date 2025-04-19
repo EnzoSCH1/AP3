@@ -2,316 +2,227 @@ const pool = require('../database');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-
-
-// userController.js
-
+//  GET ALL USERS
 exports.getAlluser = async (req, res) => {
-                let db;
+                let conn;
                 try {
-                                // Récupérer une connexion à la base de données
-                                db = await pool.getConnection();
-                                console.log("Lancement de la requête d'affichage");
-
-                                // Exécuter la requête pour récupérer tous les utilisateurs
-                                const rows = await db.query('SELECT * FROM user');
-                                console.log(rows); // Affichage dans la console des résultats
-
-                                // Retourner les résultats dans la réponse
+                                conn = await pool.getConnection();
+                                const [rows] = await conn.query('SELECT * FROM user');
                                 res.status(200).json(rows);
                 } catch (err) {
-                                console.log(err); // Afficher l'erreur dans la console si elle se produit
+                                console.error(err);
                                 res.status(500).json({ error: "Erreur lors de la récupération des utilisateurs." });
                 } finally {
-                                if (db) db.release(); // Libérer la connexion même en cas d'erreur
+                                if (conn) conn.release();
                 }
 };
 
+// INSCRIPTION
 exports.Register = async (req, res) => {
                 let conn;
                 try {
                                 const { nom, prenom, email, password } = req.body;
 
-                                // Vérifications des données
                                 if (!nom || !prenom || !email || !password) {
                                                 return res.status(400).json({ error: 'Tous les champs sont requis' });
                                 }
 
                                 conn = await pool.getConnection();
 
-                                // Vérifier si l'utilisateur existe déjà
-                                const result = await conn.query('SELECT * FROM user WHERE email = ?', [email]);
-                                if (result.length > 0) {
-                                                conn.release();
+                                const [existing] = await conn.query('SELECT * FROM user WHERE email = ?', [email]);
+                                if (existing.length > 0) {
                                                 return res.status(400).json({ error: 'Cet utilisateur existe déjà.' });
                                 }
 
-                                // Hacher le mot de passe
                                 const hashedPassword = await bcrypt.hash(password, 10);
 
-                                // Enregistrer le nouvel utilisateur
-                                const insertUserQuery = 'INSERT INTO user (nom, prenom, email, password) VALUES (?, ?, ?, ?)';
-                                const insertUserValues = [nom, prenom, email, hashedPassword];
-                                await conn.query(insertUserQuery, insertUserValues);
-                                conn.release();
+                                const insertQuery = 'INSERT INTO user (nom, prenom, email, password) VALUES (?, ?, ?, ?)';
+                                await conn.query(insertQuery, [nom, prenom, email, hashedPassword]);
 
-                                // Générer un token JWT
-                                const token = jwt.sign({ email }, process.env.API_KEY, { expiresIn: '1h' });
-
-                                // Réponse de succès
                                 res.status(200).json({ message: "Inscription réussie" });
                 } catch (error) {
                                 console.error(error);
-                                if (conn) conn.release();
                                 res.status(500).json({ error: "Erreur lors de l'inscription" });
-                }
-};
-
-
-
-
-exports.Login = async (req, res) => {
-                let conn;
-                try {
-                                const { email, password } = req.body;
-
-                                conn = await pool.getConnection();
-
-                                const result = await conn.query('SELECT * FROM user WHERE email = ?', [email]);
-
-                                if (result.length === 0) {
-                                                console.log(`Aucun utilisateur trouvé avec l'email: ${email}`);
-                                                return res.status(400).json({ error: 'Identifiants incorrects' });
-                                }
-
-                                const user = result[0];
-
-                                const isPasswordValid = await bcrypt.compare(password, user.password);
-                                if (!isPasswordValid) {
-                                                console.log('Mot de passe incorrect pour l\'utilisateur:', email);
-                                                return res.status(400).json({ error: 'Identifiants incorrects' });
-                                }
-
-                                const token = jwt.sign(
-                                                { id_user: user.id_user, email: user.email },
-                                                process.env.JWT_SECRET,
-                                                { expiresIn: '1h' }
-                                );
-
-                                const refreshToken = jwt.sign(
-                                                { id_user: user.id_user },
-                                                process.env.JWT_SECRET,
-                                                { expiresIn: '7d' }
-                                );
-
-                                // Réponse
-                                res.status(200).json({
-                                                message: 'Connexion réussie',
-                                                token,
-                                                refreshToken,
-                                                user: { id_user: user.id_user, nom: user.nom, email: user.email }
-                                });
-
-
-
-                } catch (error) {
-                                console.error('Erreur générale de connexion:', error);
-                                res.status(500).json({
-                                                error: "Erreur lors de la connexion",
-                                                details: process.env.NODE_ENV === 'development' ? error.message : null
-                                });
                 } finally {
                                 if (conn) conn.release();
                 }
 };
+
+//  CONNEXION
+exports.Login = async (req, res) => {
+                let conn;
+                try {
+                                const { email, password } = req.body;
+                                conn = await pool.getConnection();
+
+                                const [result] = await conn.query('SELECT * FROM user WHERE email = ?', [email]);
+                                if (result.length === 0) {
+                                                return res.status(400).json({ error: 'Identifiants incorrects' });
+                                }
+
+                                const user = result[0];
+                                if (!user.password || typeof user.password !== 'string') {
+                                                return res.status(500).json({ error: 'Mot de passe invalide pour cet utilisateur.' });
+                                }
+
+                                const isPasswordValid = await bcrypt.compare(password, user.password);
+                                if (!isPasswordValid) {
+                                                return res.status(400).json({ error: 'Identifiants incorrects' });
+                                }
+
+                                const secret = process.env.JWT_SECRET;
+                                const token = jwt.sign({ id_user: user.id_user, email: user.email }, secret, { expiresIn: '1h' });
+                                const refreshToken = jwt.sign({ id_user: user.id_user }, secret, { expiresIn: '7d' });
+
+                                res.status(200).json({
+                                                message: 'Connexion réussie',
+                                                token,
+                                                refreshToken,
+                                                user: {
+                                                                id_user: user.id_user,
+                                                                nom: user.nom,
+                                                                prenom: user.prenom,
+                                                                email: user.email,
+                                                                sport: user.sport,
+                                                                niveau: user.niveau
+                                                }
+                                });
+                } catch (error) {
+                                console.error('Erreur générale de connexion:', error);
+                                res.status(500).json({ error: "Erreur serveur" });
+                } finally {
+                                if (conn) conn.release();
+                }
+};
+
+//  PROFIL
 exports.getProfile = async (req, res) => {
                 let conn;
                 try {
                                 conn = await pool.getConnection();
-                                // On récupère les informations d'inscription incluant le prénom
-                                const query = 'SELECT id_user, nom, prenom, email, FROM user WHERE id_user = ?';
-                                const results = await conn.query(query, [req.user.id_user]);
+                                const [results] = await conn.query(
+                                                'SELECT id_user, nom, prenom, email, sport, niveau FROM user WHERE id_user = ?',
+                                                [req.user.id_user]
+                                );
 
-                                if (results.length > 0) {
-                                                res.status(200).json({
-                                                                message: 'Profil récupéré avec succès',
-                                                                user: results[0]
-                                                });
-                                } else {
-                                                res.status(404).json({ error: 'Utilisateur non trouvé.' });
+                                if (results.length === 0) {
+                                                return res.status(404).json({ error: 'Utilisateur non trouvé.' });
                                 }
+
+                                res.status(200).json({ message: 'Profil récupéré', user: results[0] });
                 } catch (error) {
-                                console.error('Erreur lors de la récupération du profil:', error);
+                                console.error('Erreur getProfile:', error);
                                 res.status(500).json({ error: 'Erreur lors de la récupération du profil.' });
                 } finally {
                                 if (conn) conn.release();
                 }
 };
 
-// Fonction pour compléter le profil (uniquement sport et niveau)
+// COMPLÉTER LE PROFIL
 exports.complementProfile = async (req, res) => {
                 let conn;
                 try {
-                                console.log('Requête reçue - req.user:', req.user); // ✅ Vérification
-
-                                if (!req.user || !req.user.id_user) {
-                                                return res.status(401).json({ error: 'Utilisateur non authentifié.' });
-                                }
-
                                 const { sport, niveau } = req.body;
-                                const userId = req.user.id_user; // Récupéré du token JWT
+                                const userId = req.user.id_user;
 
                                 conn = await pool.getConnection();
 
-                                // Vérifier si l'utilisateur existe
                                 const [userCheck] = await conn.query('SELECT * FROM user WHERE id_user = ?', [userId]);
                                 if (!userCheck || userCheck.length === 0) {
                                                 return res.status(404).json({ error: 'Utilisateur non trouvé.' });
                                 }
 
-                                // Vérifier si au moins un champ est fourni
                                 if (!sport && !niveau) {
-                                                return res.status(400).json({ error: 'Veuillez fournir au moins le sport ou le niveau.' });
+                                                return res.status(400).json({ error: 'Aucun champ fourni.' });
                                 }
 
-                                // Préparer la requête de mise à jour
-                                let updateQuery = 'UPDATE user SET ';
-                                const updateValues = [];
-                                const updateFields = [];
+                                const fields = [];
+                                const values = [];
 
                                 if (sport) {
-                                                updateFields.push('sport = ?');
-                                                updateValues.push(sport);
+                                                fields.push('sport = ?');
+                                                values.push(sport);
                                 }
-
                                 if (niveau) {
-                                                updateFields.push('niveau = ?');
-                                                updateValues.push(niveau);
+                                                fields.push('niveau = ?');
+                                                values.push(niveau);
                                 }
 
-                                // Compléter la requête SQL
-                                updateQuery += updateFields.join(', ');
-                                updateQuery += ' WHERE id_user = ?';
-                                updateValues.push(userId);
+                                const updateQuery = `UPDATE user SET ${fields.join(', ')} WHERE id_user = ?`;
+                                values.push(userId);
 
-                                // Exécuter la mise à jour
-                                await conn.query(updateQuery, updateValues);
+                                await conn.query(updateQuery, values);
 
-                                // Récupérer les informations mises à jour
-                                const [updatedUser] = await conn.query(
+                                const [updated] = await conn.query(
                                                 'SELECT id_user, nom, prenom, email, sport, niveau FROM user WHERE id_user = ?',
                                                 [userId]
                                 );
 
-                                if (!updatedUser || updatedUser.length === 0) {
-                                                return res.status(404).json({ error: 'Utilisateur non trouvé après mise à jour.' });
-                                }
-
-                                res.status(200).json({
-                                                message: 'Profil complété avec succès',
-                                                user: updatedUser[0]
-                                });
-
+                                res.status(200).json({ message: 'Profil mis à jour', user: updated[0] });
                 } catch (error) {
-                                console.error('Erreur lors du complément du profil:', error);
-                                res.status(500).json({
-                                                error: 'Erreur lors du complément du profil',
-                                                details: process.env.NODE_ENV === 'development' ? error.message : null
-                                });
+                                console.error('Erreur complementProfile:', error);
+                                res.status(500).json({ error: 'Erreur lors de la mise à jour du profil.' });
                 } finally {
                                 if (conn) conn.release();
                 }
 };
 
-// La fonction de rafraîchissement de token reste inchangée
+// REFRESH TOKEN
 exports.refreshToken = (req, res) => {
                 const { refreshToken } = req.body;
-
                 if (!refreshToken) {
                                 return res.status(401).json({ error: 'Refresh token manquant' });
                 }
 
                 try {
-                                const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
-                                const newToken = jwt.sign(
-                                                { id_user: decoded.id_user },
-                                                process.env.JWT_SECRET,
-                                                { expiresIn: '1h' }
-                                );
-
+                                const secret = process.env.JWT_SECRET;
+                                const decoded = jwt.verify(refreshToken, secret);
+                                const newToken = jwt.sign({ id_user: decoded.id_user }, secret, { expiresIn: '1h' });
                                 res.json({ token: newToken });
                 } catch (error) {
                                 return res.status(403).json({ error: 'Refresh token invalide ou expiré' });
                 }
 };
 
+// MODIFIER PROFIL (nom/prenom/email)
 exports.updateProfile = async (req, res) => {
                 let conn;
                 try {
                                 const { nom, prenom, email } = req.body;
-                                const userId = req.user.id_user; // Récupéré du token JWT
+                                const userId = req.user.id_user;
 
                                 if (!nom && !prenom && !email) {
-                                                return res.status(400).json({ error: 'Veuillez fournir au moins un champ à mettre à jour.' });
+                                                return res.status(400).json({ error: 'Aucun champ fourni.' });
                                 }
 
                                 conn = await pool.getConnection();
 
-                                // Vérifier si l'utilisateur existe
-                                const [userCheck] = await conn.query('SELECT * FROM user WHERE id_user = ?', [userId]);
-                                if (!userCheck || userCheck.length === 0) {
+                                const [check] = await conn.query('SELECT * FROM user WHERE id_user = ?', [userId]);
+                                if (!check || check.length === 0) {
                                                 return res.status(404).json({ error: 'Utilisateur non trouvé.' });
                                 }
 
-                                // Préparer la requête de mise à jour
-                                let updateQuery = 'UPDATE user SET ';
-                                const updateValues = [];
-                                const updateFields = [];
+                                const fields = [];
+                                const values = [];
 
-                                if (nom) {
-                                                updateFields.push('nom = ?');
-                                                updateValues.push(nom);
-                                }
+                                if (nom) { fields.push('nom = ?'); values.push(nom); }
+                                if (prenom) { fields.push('prenom = ?'); values.push(prenom); }
+                                if (email) { fields.push('email = ?'); values.push(email); }
 
-                                if (prenom) {
-                                                updateFields.push('prenom = ?');
-                                                updateValues.push(prenom);
-                                }
+                                const updateQuery = `UPDATE user SET ${fields.join(', ')} WHERE id_user = ?`;
+                                values.push(userId);
 
-                                if (email) {
-                                                updateFields.push('email = ?');
-                                                updateValues.push(email);
-                                }
+                                await conn.query(updateQuery, values);
 
-                                // Compléter la requête SQL
-                                updateQuery += updateFields.join(', ');
-                                updateQuery += ' WHERE id_user = ?';
-                                updateValues.push(userId);
-
-                                // Exécuter la mise à jour
-                                await conn.query(updateQuery, updateValues);
-
-                                // Récupérer les informations mises à jour
-                                const [updatedUser] = await conn.query(
+                                const [updated] = await conn.query(
                                                 'SELECT id_user, nom, prenom, email FROM user WHERE id_user = ?',
                                                 [userId]
                                 );
 
-                                if (!updatedUser || updatedUser.length === 0) {
-                                                return res.status(404).json({ error: 'Utilisateur non trouvé après mise à jour.' });
-                                }
-
-                                res.status(200).json({
-                                                message: 'Profil mis à jour avec succès',
-                                                user: updatedUser[0]
-                                });
-
+                                res.status(200).json({ message: 'Profil mis à jour', user: updated[0] });
                 } catch (error) {
-                                console.error('Erreur lors de la mise à jour du profil:', error);
-                                res.status(500).json({
-                                                error: 'Erreur lors de la mise à jour du profil',
-                                                details: process.env.NODE_ENV === 'development' ? error.message : null
-                                });
+                                console.error('Erreur updateProfile:', error);
+                                res.status(500).json({ error: 'Erreur lors de la mise à jour du profil.' });
                 } finally {
                                 if (conn) conn.release();
                 }

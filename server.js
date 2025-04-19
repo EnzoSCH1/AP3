@@ -3,7 +3,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const userRoute = require('./Routes/userRoute');
 const reservationRoutes = require('./Routes/reservationRoute');
-const paymentRoute = require('./Routes/paymentRoute');
+const spacesRoutes = require('./Routes/spaceRoute');
 
 dotenv.config();
 
@@ -11,7 +11,7 @@ const app = express();
 
 // Middleware CORS
 const corsOptions = {
-                origin: ['http://127.0.0.1:5501', 'http://localhost:5500'],
+                origin: ['http://127.0.0.1:5501', 'http://localhost:5500', 'http://127.0.0.1:5500'],
                 methods: ['GET', 'POST', 'PUT', 'DELETE'],
                 credentials: true
 };
@@ -19,29 +19,35 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Middleware de logging des requêtes
+app.use((req, res, next) => {
+                console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+                next();
+});
+
 // Routes
 app.use('/user', userRoute);
-
-
 app.use('/reservations', reservationRoutes);
+app.use('/spaces', spacesRoutes);
 
+// Route de base pour vérifier que le serveur fonctionne
+app.get('/', (req, res) => {
+                res.json({ message: 'API M2L fonctionnelle' });
+});
 
-app.use('/payment', paymentRoute);
+// Middleware de gestion d'erreur 404
+app.use((req, res, next) => {
+                res.status(404).json({ message: "Cette ressource n'existe pas" });
+});
 
-
-// ✅ Vérification des routes enregistrées dans Express
-// console.log("🚀 Liste des routes disponibles dans Express :");
-// app._router.stack.forEach((middleware) => {
-//                 if (middleware.route) {
-//                                 console.log(`✅ ${Object.keys(middleware.route.methods).join(', ').toUpperCase()} ${middleware.route.path}`);
-//                 } else if (middleware.name === 'router') {
-//                                 middleware.handle.stack.forEach((handler) => {
-//                                                 if (handler.route) {
-//                                                                 console.log(`✅ ${Object.keys(handler.route.methods).join(', ').toUpperCase()} ${handler.route.path}`);
-//                                                 }
-//                                 });
-//                 }
-// });
+// Middleware de gestion globale des erreurs
+app.use((err, req, res, next) => {
+                console.error("❌ ERREUR SERVEUR :", err);
+                res.status(500).json({
+                                message: "Une erreur interne est survenue",
+                                error: process.env.NODE_ENV === 'production' ? null : err.message
+                });
+});
 
 // Gestion des erreurs critiques
 process.on('uncaughtException', (err) => {

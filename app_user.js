@@ -38,13 +38,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                                                 });
 
                                                                 if (response.ok) {
-                                                                                alert('✅ Inscription réussie !');
+                                                                                alert(' Inscription réussie !');
                                                                                 window.location.href = 'connexion.html';
                                                                 } else {
-                                                                                alert('❌ Erreur d\'inscription');
+                                                                                alert(' Erreur d\'inscription');
                                                                 }
                                                 } catch (error) {
-                                                                alert('❌ Erreur de connexion au serveur');
+                                                                alert(' Erreur de connexion au serveur');
                                                 }
                                 });
                 }
@@ -73,17 +73,17 @@ document.addEventListener('DOMContentLoaded', function () {
                                                                                 const data = await response.json();
                                                                                 console.log("🔑 Réponse du serveur :", data);
 
-                                                                                // ✅ Stocker correctement l'ID utilisateur et le token
+                                                                                // Stocker correctement l'ID utilisateur et le token
                                                                                 localStorage.setItem('user_id', data.user.id_user); // Correction ici
                                                                                 localStorage.setItem('token', data.token);
 
-                                                                                alert("✅ Connexion réussie !");
+                                                                                alert(" Connexion réussie !");
                                                                                 window.location.href = 'ap2.html';
                                                                 } else {
-                                                                                showError('❌ Erreur de connexion');
+                                                                                showError(' Erreur de connexion');
                                                                 }
                                                 } catch (error) {
-                                                                showError('❌ Erreur de connexion au serveur');
+                                                                showError(' Erreur de connexion au serveur');
                                                 }
                                 });
                 }
@@ -92,16 +92,16 @@ document.addEventListener('DOMContentLoaded', function () {
 // Fonction de validation de l'inscription
 function validateForm(nom, prenom, email, mdp) {
                 if (!nom || !prenom) {
-                                alert('❌ Nom et prénom sont requis');
+                                alert(' Nom et prénom sont requis');
                                 return false;
                 }
                 const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 if (!emailRegex.test(email)) {
-                                alert('❌ Adresse email invalide');
+                                alert(' Adresse email invalide');
                                 return false;
                 }
                 if (!mdp) {
-                                alert('❌ Mot de passe requis');
+                                alert(' Mot de passe requis');
                                 return false;
                 }
                 return true;
@@ -111,11 +111,11 @@ function validateForm(nom, prenom, email, mdp) {
 function validateLogin(email, mdp) {
                 const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 if (!email || !emailRegex.test(email)) {
-                                showError('❌ Email invalide');
+                                showError(' Email invalide');
                                 return false;
                 }
                 if (!mdp) {
-                                showError('❌ Mot de passe requis');
+                                showError(' Mot de passe requis');
                                 return false;
                 }
                 return true;

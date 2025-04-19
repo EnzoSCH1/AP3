@@ -1,142 +1,115 @@
 document.addEventListener('DOMContentLoaded', async function () {
-                // Récupérer les informations utilisateur depuis localStorage
-                let user = JSON.parse(localStorage.getItem('user'));
                 let token = localStorage.getItem('token');
+                let user = localStorage.getItem('user');
 
-                if (!user || !token) {
-                                alert('Aucun utilisateur connecté. Redirection vers la page de connexion.');
-                                window.location.href = 'connexion.html';
-                                return;
+                if (!token) {
+                                alert("Aucun utilisateur connecté");
+                                return window.location.href = "connexion.html";
                 }
 
-                // Vérifier si le token est valide, sinon le rafraîchir
+                // Vérifie la validité du token
                 token = await ensureTokenValid(token);
-                if (!token) return; // Si le token est invalide après rafraîchissement, redirection
+                if (!token) return;
 
-                // Affichage des informations utilisateur
-                updateProfileUI(user);
+                // Appelle l'API pour récupérer les infos mises à jour
+                try {
+                                const res = await fetch("http://localhost:3000/user/profile", {
+                                                headers: {
+                                                                Authorization: `Bearer ${token}`
+                                                }
+                                });
 
-                // Ouvrir le formulaire de complétion de profil
-                window.openEditForm = function () {
+                                const data = await res.json();
+                                if (!res.ok) throw new Error(data.error);
+
+                                user = data.user;
+                                localStorage.setItem('user', JSON.stringify(user));
+                                updateProfileUI(user);
+                } catch (err) {
+                                console.error("Erreur lors de la récupération du profil :", err);
+                                alert("Impossible de charger le profil");
+                }
+
+                // Boutons
+                document.getElementById('logout-button').addEventListener('click', function () {
+                                localStorage.clear();
+                                window.location.href = 'connexion.html';
+                });
+
+                window.openEditForm = () => {
                                 document.getElementById('editForm').style.display = 'block';
                                 document.getElementById('overlay').style.display = 'block';
-
-                                // Pré-remplir les champs avec les informations actuelles
-                                document.getElementById('editNom').value = user.nom || '';
-                                document.getElementById('editPrenom').value = user.prenom || '';
-                                document.getElementById('editEmail').value = user.email || '';
-                                document.getElementById('editSport').value = user.sport || '';
-                                document.getElementById('editLevel').value = user.niveau || '';
+                                const u = JSON.parse(localStorage.getItem('user'));
+                                document.getElementById('editNom').value = u.nom || '';
+                                document.getElementById('editPrenom').value = u.prenom || '';
+                                document.getElementById('editEmail').value = u.email || '';
+                                document.getElementById('editSport').value = u.sport || '';
+                                document.getElementById('editLevel').value = u.niveau || '';
                 };
 
-                // Fermer le formulaire de complétion
-                window.closeEditForm = function () {
+                window.closeEditForm = () => {
                                 document.getElementById('editForm').style.display = 'none';
                                 document.getElementById('overlay').style.display = 'none';
                 };
 
-                // Sauvegarder les informations complémentaires du profil
-                window.saveProfile = async function (event) {
-                                event.preventDefault();
-
-                                const complementUser = {
-                                                // On ne modifie pas les informations existantes, on complète uniquement
-                                                sport: document.getElementById('editSport').value.trim(),
-                                                niveau: document.getElementById('editLevel').value.trim(),
+                window.saveProfile = async function (e) {
+                                e.preventDefault();
+                                const body = {
+                                                sport: document.getElementById('editSport').value,
+                                                niveau: document.getElementById('editLevel').value
                                 };
 
                                 try {
-                                                // Vérifier si le token est valide avant d'envoyer la requête
-                                                token = await ensureTokenValid(token);
-                                                if (!token) return;
-
-                                                console.log("Données envoyées :", complementUser);
-                                                console.log("Token envoyé :", token);
-
-                                                const response = await fetch('http://localhost:3000/user/complement', {
-                                                                method: 'PUT',
+                                                const res = await fetch("http://localhost:3000/user/complement", {
+                                                                method: "PUT",
                                                                 headers: {
                                                                                 'Content-Type': 'application/json',
-                                                                                Authorization: `Bearer ${token}`,
+                                                                                Authorization: `Bearer ${token}`
                                                                 },
-                                                                body: JSON.stringify(complementUser),
+                                                                body: JSON.stringify(body)
                                                 });
 
-                                                const data = await response.json();
-                                                console.log("Réponse serveur :", data);
-
-                                                if (!response.ok) {
-                                                                throw new Error(data.error || 'Erreur lors du complément du profil.');
-                                                }
-
-                                                // Mise à jour du profil dans localStorage
-                                                localStorage.setItem('user', JSON.stringify(data.user));
-                                                user = data.user; // Mettre à jour la variable user
-
-                                                // Mise à jour de l'affichage
-                                                updateProfileUI(user);
-
-                                                alert('Profil complété avec succès !');
+                                                const data = await res.json();
+                                                if (!res.ok) throw new Error(data.error);
+                                                alert("Profil mis à jour");
+                                                localStorage.setItem("user", JSON.stringify(data.user));
+                                                updateProfileUI(data.user);
                                                 closeEditForm();
-
-                                } catch (error) {
-                                                console.error('Erreur:', error);
-                                                alert(error.message);
+                                } catch (err) {
+                                                alert("Erreur : " + err.message);
                                 }
                 };
-
-                // Déconnexion
-                document.getElementById('logout-button').addEventListener('click', function () {
-                                localStorage.removeItem('token');
-                                localStorage.removeItem('user');
-                                alert('Déconnexion réussie.');
-                                window.location.href = 'connexion.html';
-                });
 });
 
-// 🔄 Rafraîchir le token si expiré
+// Mise à jour UI
+function updateProfileUI(user) {
+                document.getElementById('userName').textContent = user.nom || "Non renseigné";
+                document.getElementById('userFirstName').textContent = user.prenom || "Non renseigné";
+                document.getElementById('userEmail').textContent = user.email || "Non renseigné";
+                document.getElementById('userSport').textContent = user.sport || "Non renseigné";
+                document.getElementById('userLevel').textContent = user.niveau || "Non renseigné";
+}
+
+// Rafraîchir le token
 async function refreshToken() {
                 const refreshToken = localStorage.getItem('refreshToken');
-                if (!refreshToken) {
-                                console.error("Aucun refresh token disponible.");
-                                window.location.href = 'connexion.html';
-                                return null;
-                }
-
+                if (!refreshToken) return null;
                 try {
-                                const response = await fetch('http://localhost:3000/user/refresh', {
+                                const res = await fetch("http://localhost:3000/user/refresh", {
                                                 method: 'POST',
                                                 headers: { 'Content-Type': 'application/json' },
                                                 body: JSON.stringify({ refreshToken })
                                 });
-
-                                const data = await response.json();
-                                if (!response.ok) throw new Error(data.error);
-
-                                localStorage.setItem('token', data.token); // Met à jour le token
-                                console.log('Nouveau token stocké:', data.token);
+                                const data = await res.json();
+                                if (!res.ok) throw new Error(data.error);
+                                localStorage.setItem('token', data.token);
                                 return data.token;
-                } catch (error) {
-                                console.error('Erreur de rafraîchissement du token:', error);
-                                window.location.href = 'connexion.html'; // Forcer la reconnexion
+                } catch (err) {
+                                console.error("Erreur token :", err);
                                 return null;
                 }
 }
 
-// ✅ Vérifier si le token est valide et le rafraîchir si besoin
 async function ensureTokenValid(token) {
-                if (!token) {
-                                console.log("Aucun token présent, tentative de rafraîchissement...");
-                                return await refreshToken();
-                }
-                return token;
-}
-
-// 🔄 Mettre à jour l'affichage du profil
-function updateProfileUI(user) {
-                document.getElementById('userName').textContent = user.nom || 'Non renseigné';
-                document.getElementById('userFirstName').textContent = user.prenom || 'Non renseigné';
-                document.getElementById('userEmail').textContent = user.email || 'Non renseigné';
-                document.getElementById('userSport').textContent = user.sport || 'Non renseigné';
-                document.getElementById('userLevel').textContent = user.niveau || 'Non renseigné';
+                return token || await refreshToken();
 }
