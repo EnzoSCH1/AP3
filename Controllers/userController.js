@@ -101,7 +101,7 @@ exports.getProfile = async (req, res) => {
                 try {
                                 conn = await pool.getConnection();
                                 const [results] = await conn.query(
-                                                'SELECT id_user, nom, prenom, email, sport, niveau FROM user WHERE id_user = ?',
+                                                'SELECT id_user, nom, prenom, email, sport, niveau, is_admin, admin_request FROM user WHERE id_user = ?',
                                                 [req.user.id_user]
                                 );
 
@@ -227,3 +227,60 @@ exports.updateProfile = async (req, res) => {
                                 if (conn) conn.release();
                 }
 };
+
+// DEMANDE ADMIN
+exports.requestAdmin = async (req, res) => {
+                const userId = req.user.id_user;
+                let conn;
+                try {
+                                conn = await pool.getConnection();
+
+                                // Mettre à jour uniquement la demande, pas l'admin direct
+                                await conn.query('UPDATE user SET admin_request = 1 WHERE id_user = ?', [userId]);
+
+                                res.status(200).json({ message: 'Demande envoyée avec succès.' });
+                } catch (err) {
+                                console.error(" Erreur dans requestAdmin :", err);
+                                res.status(500).json({ error: "Erreur serveur." });
+                } finally {
+                                if (conn) conn.release();
+                }
+};
+
+exports.approveAdmin = async (req, res) => {
+                // Vérifie si c'est Luc qui fait la demande
+                if (req.user.email !== 'lucma@gmail.com') {
+                                return res.status(403).json({ error: "Seul l'admin principal peut valider les demandes." });
+                }
+
+                const { id_user } = req.body; // L’ID du futur admin à promouvoir
+                let conn;
+                try {
+                                conn = await pool.getConnection();
+                                await conn.query('UPDATE user SET is_admin = TRUE, admin_request = FALSE WHERE id_user = ?', [id_user]);
+                                res.status(200).json({ message: 'Utilisateur promu administrateur avec succès.' });
+                } catch (err) {
+                                console.error("Erreur dans approveAdmin:", err);
+                                res.status(500).json({ error: "Erreur serveur." });
+                } finally {
+                                if (conn) conn.release();
+                }
+};
+
+
+
+exports.getAdminRequests = async (req, res) => {
+                let conn;
+                try {
+                                conn = await pool.getConnection();
+                                const [users] = await conn.query('SELECT id_user, nom, prenom, email FROM user WHERE admin_request = 1');
+                                res.status(200).json({ users });
+                } catch (err) {
+                                res.status(500).json({ error: "Erreur lors de la récupération des demandes." });
+                } finally {
+                                if (conn) conn.release();
+                }
+};
+
+
+

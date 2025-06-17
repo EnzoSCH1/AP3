@@ -42,7 +42,7 @@ app.use((req, res, next) => {
 
 // Middleware de gestion globale des erreurs
 app.use((err, req, res, next) => {
-                console.error("❌ ERREUR SERVEUR :", err);
+                console.error(" ERREUR SERVEUR :", err);
                 res.status(500).json({
                                 message: "Une erreur interne est survenue",
                                 error: process.env.NODE_ENV === 'production' ? null : err.message
@@ -51,17 +51,17 @@ app.use((err, req, res, next) => {
 
 // Gestion des erreurs critiques
 process.on('uncaughtException', (err) => {
-                console.error("🔥 ERREUR CRITIQUE :", err);
+                console.error(" ERREUR CRITIQUE :", err);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-                console.error("🔥 PROMESSE NON GÉRÉE :", reason);
+                console.error(" PROMESSE NON GÉRÉE :", reason);
 });
 
 // Lancement du serveur
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-                console.log(`✅ Serveur à l'écoute sur le port ${PORT}`);
+                console.log(` Serveur à l'écoute sur le port ${PORT}`);
 });
 
 module.exports = app;

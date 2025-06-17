@@ -88,7 +88,25 @@ function updateProfileUI(user) {
                 document.getElementById('userEmail').textContent = user.email || "Non renseigné";
                 document.getElementById('userSport').textContent = user.sport || "Non renseigné";
                 document.getElementById('userLevel').textContent = user.niveau || "Non renseigné";
+
+                // Masquer le bouton de demande admin si déjà admin ou demande envoyée
+                const demandeBtn = document.getElementById('demandeAdminBtn');
+                if (demandeBtn && (user.is_admin || user.admin_request)) {
+                                demandeBtn.style.display = 'none';
+                }
+
+                // Gérer l'affichage du lien vers l'administration (uniquement pour lucma@gmail.com)
+                const adminLink = document.createElement('a');
+                adminLink.href = 'admin.html';
+                adminLink.textContent = 'Accéder à l\'administration';
+                adminLink.style.color = 'green';
+
+                if (user.is_admin && user.email === 'lucma@gmail.com') {
+                                document.querySelector('.wrapper').appendChild(adminLink);
+                }
 }
+
+
 
 // Rafraîchir le token
 async function refreshToken() {
@@ -113,3 +131,32 @@ async function refreshToken() {
 async function ensureTokenValid(token) {
                 return token || await refreshToken();
 }
+
+
+// Gestionnaire pour la demande de droits administrateur
+document.addEventListener('DOMContentLoaded', () => {
+                const demandeBtn = document.getElementById('demandeAdminBtn');
+                if (demandeBtn) {
+                                demandeBtn.addEventListener('click', async () => {
+                                                const token = localStorage.getItem('token');
+                                                try {
+                                                                const response = await fetch('http://localhost:3000/user/request-admin', {
+                                                                                method: 'POST',
+                                                                                headers: {
+                                                                                                'Content-Type': 'application/json',
+                                                                                                'Authorization': `Bearer ${token}`
+                                                                                }
+                                                                });
+
+                                                                const data = await response.json();
+                                                                if (response.ok) {
+                                                                                alert(data.message);
+                                                                } else {
+                                                                                alert(data.error || 'Erreur lors de la demande.');
+                                                                }
+                                                } catch (err) {
+                                                                alert('Erreur de communication avec le serveur.');
+                                                }
+                                });
+                }
+});
