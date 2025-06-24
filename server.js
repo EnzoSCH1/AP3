@@ -28,7 +28,7 @@ app.use((req, res, next) => {
                 next();
 });
 
-// Fichiers statiques (HTML, CSS, JS, images)
+// Fichiers statiques
 app.use(express.static(path.join(__dirname)));
 
 // Routes API
@@ -38,7 +38,7 @@ app.use('/spaces', spacesRoutes);
 app.use('/articles', articleRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Test de base
+// Route de test
 app.get('/', (req, res) => {
                 res.json({ message: 'API M2L fonctionnelle' });
 });
@@ -48,28 +48,28 @@ app.use((req, res) => {
                 res.status(404).json({ message: "Cette ressource n'existe pas" });
 });
 
-// Erreurs globales
+// Gestion des erreurs globales
 app.use((err, req, res, next) => {
-                console.error(" ERREUR SERVEUR :", err);
+                console.error("ERREUR SERVEUR :", err);
                 res.status(500).json({
                                 message: "Une erreur interne est survenue",
                                 error: process.env.NODE_ENV === 'production' ? null : err.message
                 });
 });
 
-// Erreurs critiques
+// Exceptions non gérées
 process.on('uncaughtException', (err) => {
-                console.error(" ERREUR CRITIQUE :", err);
+                console.error("ERREUR CRITIQUE :", err);
 });
 
 process.on('unhandledRejection', (reason) => {
-                console.error(" PROMESSE NON GÉRÉE :", reason);
+                console.error("PROMESSE NON GÉRÉE :", reason);
 });
 
-// Lancement serveur
+// Lancement du serveur (corrigé ici)
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-                console.log(` Serveur à l'écoute sur le port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+                console.log(`Serveur à l'écoute sur le port ${PORT}`);
 });
 
 module.exports = app;
