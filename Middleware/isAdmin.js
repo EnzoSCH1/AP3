@@ -1,35 +1,26 @@
-const pool = require('../database');
+const jwt = require('jsonwebtoken');
 
-/**
- * Middleware pour vérifier si l'utilisateur est administrateur
- * Doit être utilisé après le middleware authenticator
- */
-exports.isAdmin = async (req, res, next) => {
-                let conn;
-                try {
-                                if (!req.user || !req.user.id_user) {
-                                                console.log(" Accès refusé - Aucune donnée utilisateur trouvée");
-                                                return res.status(403).json({ message: 'Accès interdit - Aucune donnée utilisateur trouvée' });
-                                }
+const isAdmin = (req, res, next) => {
+                console.log('🔍 Vérification admin pour:', req.user);
 
-                                console.log(' Vérification des droits admin pour l\'ID utilisateur:', req.user.id_user);
-
-                                conn = await pool.getConnection();
-                                const [result] = await conn.query('SELECT is_admin FROM user WHERE id_user = ?', [req.user.id_user]);
-
-                                console.log(' Résultat de la requête isAdmin:', result);
-
-                                if (result.length > 0 && result[0].is_admin === 1) {
-                                                console.log(" Accès administrateur autorisé");
-                                                return next();
-                                } else {
-                                                console.log(" Accès interdit - L'utilisateur n'est pas admin");
-                                                return res.status(403).json({ message: 'Accès interdit - Droits administrateur requis' });
-                                }
-                } catch (error) {
-                                console.error(' Erreur dans le middleware isAdmin:', error);
-                                res.status(500).json({ message: 'Erreur interne du serveur' });
-                } finally {
-                                if (conn) conn.release();
+                // Vérifier que l'utilisateur est bien authentifié
+                if (!req.user) {
+                                console.log('❌ Aucun utilisateur dans req.user');
+                                return res.status(401).json({ error: 'Utilisateur non authentifié' });
                 }
+
+                // Vérifier le statut admin (plusieurs formats possibles)
+                const isAdminUser = req.user.is_admin === 1 ||
+                                req.user.is_admin === true ||
+                                req.user.is_admin === '1';
+
+                if (!isAdminUser) {
+                                console.log('❌ Utilisateur non admin:', req.user.is_admin);
+                                return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
+                }
+
+                console.log('✅ Utilisateur admin vérifié');
+                next();
 };
+
+module.exports = isAdmin;

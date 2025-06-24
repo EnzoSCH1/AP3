@@ -2,8 +2,9 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../Controllers/userController');
-const { authenticator } = require('../Middleware/authentificator');
-const { isAdmin } = require('../Middleware/isAdmin');
+const authenticator = require('../Middleware/authentificator');
+const isAdmin = require('../Middleware/isAdmin');
+
 
 // Routes publiques
 router.post('/register', userController.Register);

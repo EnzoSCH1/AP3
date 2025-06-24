@@ -1,15 +1,18 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
+
 const userRoute = require('./Routes/userRoute');
 const reservationRoutes = require('./Routes/reservationRoute');
 const spacesRoutes = require('./Routes/spaceRoute');
+const articleRoutes = require('./Routes/articleRoutes');
 
 dotenv.config();
 
 const app = express();
 
-// Middleware CORS
+// CORS
 const corsOptions = {
                 origin: ['http://127.0.0.1:5501', 'http://localhost:5500', 'http://127.0.0.1:5500'],
                 methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -19,28 +22,33 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Middleware de logging des requêtes
+// Logging
 app.use((req, res, next) => {
                 console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
                 next();
 });
 
-// Routes
+// Fichiers statiques (HTML, CSS, JS, images)
+app.use(express.static(path.join(__dirname)));
+
+// Routes API
 app.use('/user', userRoute);
 app.use('/reservations', reservationRoutes);
 app.use('/spaces', spacesRoutes);
+app.use('/articles', articleRoutes);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Route de base pour vérifier que le serveur fonctionne
+// Test de base
 app.get('/', (req, res) => {
                 res.json({ message: 'API M2L fonctionnelle' });
 });
 
-// Middleware de gestion d'erreur 404
-app.use((req, res, next) => {
+// 404
+app.use((req, res) => {
                 res.status(404).json({ message: "Cette ressource n'existe pas" });
 });
 
-// Middleware de gestion globale des erreurs
+// Erreurs globales
 app.use((err, req, res, next) => {
                 console.error(" ERREUR SERVEUR :", err);
                 res.status(500).json({
@@ -49,16 +57,16 @@ app.use((err, req, res, next) => {
                 });
 });
 
-// Gestion des erreurs critiques
+// Erreurs critiques
 process.on('uncaughtException', (err) => {
                 console.error(" ERREUR CRITIQUE :", err);
 });
 
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason) => {
                 console.error(" PROMESSE NON GÉRÉE :", reason);
 });
 
-// Lancement du serveur
+// Lancement serveur
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
                 console.log(` Serveur à l'écoute sur le port ${PORT}`);

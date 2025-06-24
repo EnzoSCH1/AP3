@@ -71,8 +71,22 @@ exports.Login = async (req, res) => {
                                 }
 
                                 const secret = process.env.JWT_SECRET;
-                                const token = jwt.sign({ id_user: user.id_user, email: user.email }, secret, { expiresIn: '1h' });
+
+                                // ✅ Le token contient toutes les infos nécessaires
+                                const token = jwt.sign({
+                                                id_user: user.id_user,
+                                                email: user.email,
+                                                nom: user.nom,
+                                                prenom: user.prenom,
+                                                is_admin: user.is_admin === 1 ? 1 : 0 // pour éviter undefined
+                                }, secret, { expiresIn: '1h' });
+
                                 const refreshToken = jwt.sign({ id_user: user.id_user }, secret, { expiresIn: '7d' });
+
+                                console.log('✅ Connexion réussie pour :', {
+                                                email: user.email,
+                                                is_admin: user.is_admin
+                                });
 
                                 res.status(200).json({
                                                 message: 'Connexion réussie',
@@ -84,7 +98,8 @@ exports.Login = async (req, res) => {
                                                                 prenom: user.prenom,
                                                                 email: user.email,
                                                                 sport: user.sport,
-                                                                niveau: user.niveau
+                                                                niveau: user.niveau,
+                                                                is_admin: user.is_admin === 1 ? 1 : 0
                                                 }
                                 });
                 } catch (error) {
@@ -94,6 +109,7 @@ exports.Login = async (req, res) => {
                                 if (conn) conn.release();
                 }
 };
+
 
 //  PROFIL
 exports.getProfile = async (req, res) => {

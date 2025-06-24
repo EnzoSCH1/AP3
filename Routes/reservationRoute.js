@@ -1,7 +1,6 @@
-// Routes/reservationRoute.js
 const express = require('express');
 const router = express.Router();
-const { authenticator } = require('../Middleware/authentificator');
+const authenticator = require('../Middleware/authentificator'); // <-- correction ici
 const reservationController = require('../Controllers/reservationController');
 
 router.post('/create', authenticator, reservationController.createReservation);

@@ -56,10 +56,10 @@ document.addEventListener("DOMContentLoaded", () => {
                                                                 if (!res.ok) return alert(data.error || "Erreur lors de la réservation");
 
                                                                 alert("✅ Réservation créée !");
-                                                                form.reset();
-                                                                durationEl.textContent = "---";
-                                                                totalAmountEl.textContent = "---";
-                                                                document.getElementById("reserver").disabled = true;
+                                                                setTimeout(() => {
+                                                                                window.location.href = "../Pages/ap2.html"; // redirection vers la page d'accueil après 2 secondes
+                                                                }, 2000);
+
                                                 } catch (err) {
                                                                 console.error("Erreur submit:", err);
                                                                 alert("Erreur de communication avec le serveur.");

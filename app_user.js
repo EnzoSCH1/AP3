@@ -58,9 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                                 const email = document.getElementById('email').value.trim();
                                                 const mdp = document.getElementById('mdp').value;
 
-                                                if (!validateLogin(email, mdp)) {
-                                                                return;
-                                                }
+                                                if (!validateLogin(email, mdp)) return;
 
                                                 try {
                                                                 const response = await fetch('http://localhost:3000/user/login', {
@@ -71,23 +69,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
                                                                 if (response.ok) {
                                                                                 const data = await response.json();
-                                                                                console.log("🔑 Réponse du serveur :", data);
-
-                                                                                // Stocker correctement l'ID utilisateur et le token
-                                                                                localStorage.setItem('user_id', data.user.id_user); // Correction ici
+                                                                                localStorage.setItem('user_id', data.user.id_user);
                                                                                 localStorage.setItem('token', data.token);
+                                                                                localStorage.setItem('user', JSON.stringify(data.user));
 
-                                                                                alert(" Connexion réussie !");
-                                                                                window.location.href = 'ap2.html';
+                                                                                alert("✅ Connexion réussie !");
+                                                                                window.location.href = 'ap2.html'; // ✅ accueil pour tous
                                                                 } else {
-                                                                                showError(' Erreur de connexion');
+                                                                                const errorData = await response.json();
+                                                                                showError(errorData.error || '❌ Erreur de connexion');
                                                                 }
                                                 } catch (error) {
-                                                                showError(' Erreur de connexion au serveur');
+                                                                console.error("❌ Erreur réseau:", error);
+                                                                showError('❌ Erreur de connexion au serveur');
                                                 }
                                 });
                 }
-});
+}); // ← FERMETURE correcte de 'DOMContentLoaded'
 
 // Fonction de validation de l'inscription
 function validateForm(nom, prenom, email, mdp) {
@@ -138,6 +136,3 @@ function createErrorDiv() {
                 loginForm.appendChild(errorDiv);
                 return errorDiv;
 }
-
-
-

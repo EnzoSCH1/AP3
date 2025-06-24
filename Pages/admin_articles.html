@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Document</title>
+                <script defer src="/adminArticles.js"></script>
+                <link rel="stylesheet" href="/style_css/admin_articles.css">
+</head>
+
+<body>
+                <div class="container">
+                                <h2>Publier un nouvel article</h2>
+
+                                <div id="alert" class="alert"></div>
+
+                                <form id="article-form">
+                                                <div class="form-group">
+                                                                <label for="titre">Titre de l'article *</label>
+                                                                <input type="text" id="titre"
+                                                                                placeholder="Saisissez le titre"
+                                                                                required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                                <label for="contenu">Contenu de l'article *</label>
+                                                                <textarea id="contenu"
+                                                                                placeholder="Rédigez votre article..."
+                                                                                required></textarea>
+                                                </div>
+
+                                                <div class="form-group">
+                                                                <label for="image">Image (optionnelle)</label>
+                                                                <input type="file" id="image" accept="image/*">
+                                                </div>
+
+                                                <button type="submit"> Publier l'article</button>
+                                </form>
+
+                                <a href="articles.html" class="nav-link"> Voir les articles publics</a>
+                </div>
+</body>
+
+</html>
