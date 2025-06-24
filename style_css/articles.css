@@ -1,0 +1,380 @@
+/* ============== ARTICLES PUBLIC STYLES - UNE COLONNE ============== */
+
+* {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+}
+
+body {
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                min-height: 100vh;
+                color: #000000;
+                line-height: 1.6;
+}
+
+.container {
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 80px 40px;
+}
+
+/* Titre principal */
+h1 {
+                text-align: center;
+                font-size: 3.5rem;
+                font-weight: 800;
+                margin-bottom: 80px;
+                color: #DC320F;
+                text-shadow: 0 2px 4px rgba(220, 50, 15, 0.1);
+                position: relative;
+}
+
+h1::after {
+                content: '';
+                position: absolute;
+                bottom: -20px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 100px;
+                height: 4px;
+                background: linear-gradient(90deg, #DC320F, #ff6b6b);
+                border-radius: 2px;
+}
+
+/* Bouton "Écrire un article" */
+.write-button {
+                display: block;
+                width: fit-content;
+                margin: 0 auto 60px;
+                padding: 18px 40px;
+                background: #DC320F;
+                color: white;
+                text-decoration: none;
+                border-radius: 50px;
+                font-weight: 600;
+                font-size: 1.1rem;
+                box-shadow: 0 8px 25px rgba(220, 50, 15, 0.3);
+                transition: all 0.3s ease;
+                border: none;
+}
+
+.write-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 35px rgba(220, 50, 15, 0.4);
+                background: #b8280c;
+}
+
+/* Conteneur des articles */
+#articles {
+                display: flex;
+                flex-direction: column;
+                gap: 60px;
+}
+
+/* Cartes d'articles */
+.article-card {
+                background: #ffffff;
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+                transition: all 0.4s ease;
+                border: 1px solid rgba(0, 0, 0, 0.05);
+                position: relative;
+}
+
+.article-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+}
+
+.article-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 5px;
+                background: linear-gradient(90deg, #DC320F, #ff6b6b, #DC320F);
+                background-size: 200% 100%;
+                animation: gradientMove 3s ease-in-out infinite;
+}
+
+@keyframes gradientMove {
+
+                0%,
+                100% {
+                                background-position: 200% 0;
+                }
+
+                50% {
+                                background-position: -200% 0;
+                }
+}
+
+/* Structure des articles - Image en premier */
+.article-card {
+                background: #ffffff;
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+                transition: all 0.4s ease;
+                border: 1px solid rgba(0, 0, 0, 0.05);
+                position: relative;
+                display: flex;
+                flex-direction: column;
+}
+
+/* Images d'articles - Positionnées en premier */
+.article-image {
+                width: 100%;
+                height: 350px;
+                overflow: hidden;
+                position: relative;
+                background: #f8fafc;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                order: 1;
+}
+
+.article-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+}
+
+.article-card:hover .article-image img {
+                transform: scale(1.05);
+}
+
+/* Contenu des articles - Positionné après l'image */
+.article-content {
+                padding: 50px;
+                order: 2;
+}
+
+.article-title {
+                font-size: 2.2rem;
+                font-weight: 700;
+                color: #000000;
+                margin-bottom: 25px;
+                line-height: 1.3;
+}
+
+.article-text {
+                display: -webkit-box;
+                -webkit-line-clamp: 4;
+                line-clamp: 4;
+                /* <-- la version standard */
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+}
+
+
+/* Métadonnées */
+.article-meta {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding-top: 30px;
+                border-top: 2px solid #f1f5f9;
+                font-size: 1rem;
+                gap: 20px;
+}
+
+.article-author {
+                font-weight: 600;
+                color: #DC320F;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 1.1rem;
+}
+
+.article-author::before {
+                content: '✍️';
+                font-size: 1.2em;
+}
+
+.article-date {
+                color: #000000;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 1rem;
+}
+
+.article-date::before {
+                content: '📅';
+                font-size: 1.1em;
+}
+
+/* État de chargement */
+.loading {
+                text-align: center;
+                padding: 100px 50px;
+                font-size: 1.8rem;
+                color: #000000;
+                background: #ffffff;
+                border-radius: 20px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                margin: 60px 0;
+                position: relative;
+}
+
+.loading::before {
+                content: '';
+                position: absolute;
+                width: 80px;
+                height: 80px;
+                border: 4px solid #f1f5f9;
+                border-top: 4px solid #DC320F;
+                border-radius: 50%;
+                top: 40px;
+                left: 50%;
+                transform: translateX(-50%);
+                animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+                0% {
+                                transform: translateX(-50%) rotate(0deg);
+                }
+
+                100% {
+                                transform: translateX(-50%) rotate(360deg);
+                }
+}
+
+/* Animations d'entrée */
+.article-card {
+                opacity: 0;
+                transform: translateY(40px);
+                animation: slideUp 0.8s ease forwards;
+}
+
+.article-card:nth-child(1) {
+                animation-delay: 0.1s;
+}
+
+.article-card:nth-child(2) {
+                animation-delay: 0.3s;
+}
+
+.article-card:nth-child(3) {
+                animation-delay: 0.5s;
+}
+
+.article-card:nth-child(4) {
+                animation-delay: 0.7s;
+}
+
+button {
+                background-color: #DC320F;
+                color: white;
+                padding: 12px 30px;
+                font-size: 1rem;
+                border: none;
+                border-radius: 50px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: background-color 0.3s ease, transform 0.2s ease;
+                box-shadow: 0 8px 20px rgba(220, 50, 15, 0.3);
+}
+
+button:hover {
+                background-color: #b8280c;
+                transform: translateY(-2px);
+                box-shadow: 0 12px 30px rgba(220, 50, 15, 0.4);
+}
+
+
+@keyframes slideUp {
+                to {
+                                opacity: 1;
+                                transform: translateY(0);
+                }
+}
+
+/* Séparateur entre articles */
+.article-card:not(:last-child)::after {
+                content: '';
+                position: absolute;
+                bottom: -30px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 60px;
+                height: 2px;
+                background: linear-gradient(90deg, transparent, #DC320F, transparent);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+                .container {
+                                padding: 60px 20px;
+                                max-width: 100%;
+                }
+
+                h1 {
+                                font-size: 2.5rem;
+                                margin-bottom: 60px;
+                }
+
+                .article-content {
+                                padding: 35px 30px;
+                }
+
+                .article-title {
+                                font-size: 1.8rem;
+                }
+
+                .article-text {
+                                font-size: 1rem;
+                }
+
+                .article-image {
+                                height: 250px;
+                }
+
+                #articles {
+                                gap: 40px;
+                }
+
+                .article-meta {
+                                flex-direction: column;
+                                align-items: flex-start;
+                                gap: 15px;
+                }
+}
+
+@media (max-width: 480px) {
+                .container {
+                                padding: 40px 15px;
+                }
+
+                h1 {
+                                font-size: 2rem;
+                }
+
+                .article-content {
+                                padding: 25px 20px;
+                }
+
+                .article-title {
+                                font-size: 1.6rem;
+                }
+
+                .article-image {
+                                height: 200px;
+                }
+
+                .write-button {
+                                padding: 15px 30px;
+                                font-size: 1rem;
+                }
+}
